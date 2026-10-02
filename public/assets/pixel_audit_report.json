@@ -1,0 +1,710 @@
+{
+  "engine": "Velmora 2D Pixel Art QA Inspector v2.0",
+  "total_images_scanned": 70,
+  "total_pixels_analyzed": 10400640,
+  "orphan_pixels_repaired": 0,
+  "alpha_bleed_pixels_snapped": 0,
+  "status": "PASSED_100_PERCENT",
+  "assets": [
+    {
+      "file": "monster_sprite/hydro_1.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 24.83,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/hydro_1_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 24.61,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/hydro_2.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 40.45,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/hydro_2_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 40.23,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/hydro_3.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 61.81,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/hydro_3_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 61.59,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/lux_1.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 25.09,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/lux_1_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 24.87,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/lux_2.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 40.71,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/lux_2_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 40.49,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/lux_3.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 61.72,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/lux_3_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 61.5,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/pyro_1.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 25.26,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/pyro_1_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 25.04,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/pyro_2.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 39.24,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/pyro_2_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 39.02,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/pyro_3.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 59.46,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/pyro_3_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 59.24,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/terra_1.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 27.6,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/terra_1_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 27.43,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/terra_2.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 41.93,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/terra_2_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 41.75,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/terra_3.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 62.59,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/terra_3_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 62.33,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/umbra_1.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 23.87,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/umbra_1_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 23.65,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/umbra_2.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 38.54,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/umbra_2_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 38.32,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/umbra_3.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 59.11,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/umbra_3_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 58.9,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/volt_1.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 23.96,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/volt_1_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 23.74,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/volt_2.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 40.36,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/volt_2_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 40.15,
+      "unique_rgba_colors": 7,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/volt_3.png",
+      "resolution": "192x192",
+      "pixels_analyzed": 36864,
+      "opaque_coverage_pct": 61.55,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "monster_sprite/volt_3_anim.png",
+      "resolution": "384x192",
+      "pixels_analyzed": 73728,
+      "opaque_coverage_pct": 61.33,
+      "unique_rgba_colors": 8,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "evolution_sheet/sheet_earth.png",
+      "resolution": "1200x540",
+      "pixels_analyzed": 648000,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 1842,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "evolution_sheet/sheet_fire.png",
+      "resolution": "1200x540",
+      "pixels_analyzed": 648000,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 1918,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "evolution_sheet/sheet_light.png",
+      "resolution": "1200x540",
+      "pixels_analyzed": 648000,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 1861,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "evolution_sheet/sheet_shadow.png",
+      "resolution": "1200x540",
+      "pixels_analyzed": 648000,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 1833,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "evolution_sheet/sheet_storm.png",
+      "resolution": "1200x540",
+      "pixels_analyzed": 648000,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 1854,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "evolution_sheet/sheet_water.png",
+      "resolution": "1200x540",
+      "pixels_analyzed": 648000,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 1841,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_backpack.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 43.75,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_bldg_forge.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_bldg_mine.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 43.75,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_bldg_reactor.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 27.78,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_bldg_sanctuary.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_capture_basic.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_capture_master.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_citadel.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 43.75,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_codex.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 43.75,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_crystals.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 27.78,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_elem_earth.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_elem_fire.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_elem_light.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_elem_shadow.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_elem_storm.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_elem_water.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_energy.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 34.72,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_evo_crown.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 43.75,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_gold.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_stars.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 34.72,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_summon_egg.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 27.78,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_sword_pvp.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 34.72,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_ton.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 27.78,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "ui_icon/icon_xp_fruit.png",
+      "resolution": "96x96",
+      "pixels_analyzed": 9216,
+      "opaque_coverage_pct": 37.5,
+      "unique_rgba_colors": 5,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "scene_background/battle_arena_bg.png",
+      "resolution": "1376x768",
+      "pixels_analyzed": 1056768,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 172868,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "scene_background/citadel_hub_bg.png",
+      "resolution": "1408x768",
+      "pixels_analyzed": 1081344,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 522024,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "scene_background/summon_altar_bg.png",
+      "resolution": "1408x768",
+      "pixels_analyzed": 1081344,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 207399,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    },
+    {
+      "file": "scene_background/title_hero_bg.png",
+      "resolution": "1408x768",
+      "pixels_analyzed": 1081344,
+      "opaque_coverage_pct": 100.0,
+      "unique_rgba_colors": 397551,
+      "orphans_repaired": 0,
+      "alpha_snapped": 0,
+      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+    }
+  ]
+}
