@@ -1,710 +1,2384 @@
 {
-  "engine": "Velmora 2D Pixel Art QA Inspector v2.0",
-  "total_images_scanned": 70,
-  "total_pixels_analyzed": 10400640,
-  "orphan_pixels_repaired": 0,
-  "alpha_bleed_pixels_snapped": 0,
-  "status": "PASSED_100_PERCENT",
+  "engine": "Velmora Real QA Inspector v4.0",
+  "total_assets_inspected": 88,
+  "passed_all_checks": true,
+  "cross_species_uniqueness": {
+    "total_species": 18,
+    "unique_sha256_hashes": 18,
+    "pairwise_comparisons_count": 153,
+    "mean_silhouette_iou": 0.4639,
+    "max_silhouette_iou": 0.7039,
+    "highest_iou_pair": "volt_3 vs umbra_2 (0.7039)",
+    "zero_recolored_clones_verified": true
+  },
+  "spritesheet_animation_verification": {
+    "total_spritesheets": 18,
+    "native_frame_size": "128x128",
+    "grid_layout": "4 columns x 6 rows (24 frames per monster = 432 total animation frames)",
+    "all_frames_distinct": true,
+    "sheets": {
+      "pyro_1": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              5356,
+              5303,
+              6119
+            ],
+            "min_changed_pixels": 5303,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              6366,
+              6244,
+              6056
+            ],
+            "min_changed_pixels": 6056,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              6675,
+              6366,
+              6488
+            ],
+            "min_changed_pixels": 6366,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              5054,
+              5814,
+              5651
+            ],
+            "min_changed_pixels": 5054,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              4970,
+              3843,
+              3010
+            ],
+            "min_changed_pixels": 3010,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              5385,
+              6047,
+              6549
+            ],
+            "min_changed_pixels": 5385,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "pyro_2": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              7274,
+              7089,
+              8293
+            ],
+            "min_changed_pixels": 7089,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              8662,
+              8516,
+              8066
+            ],
+            "min_changed_pixels": 8066,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              8889,
+              8554,
+              8653
+            ],
+            "min_changed_pixels": 8554,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              6919,
+              7669,
+              7347
+            ],
+            "min_changed_pixels": 6919,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6489,
+              5220,
+              3535
+            ],
+            "min_changed_pixels": 3535,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              7101,
+              7663,
+              7823
+            ],
+            "min_changed_pixels": 7101,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "pyro_3": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              4374,
+              4325,
+              5086
+            ],
+            "min_changed_pixels": 4325,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              5280,
+              5171,
+              4927
+            ],
+            "min_changed_pixels": 4927,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              5608,
+              5281,
+              5427
+            ],
+            "min_changed_pixels": 5281,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              4032,
+              4719,
+              4376
+            ],
+            "min_changed_pixels": 4032,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              4010,
+              3178,
+              2239
+            ],
+            "min_changed_pixels": 2239,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              4370,
+              5078,
+              5584
+            ],
+            "min_changed_pixels": 4370,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "hydro_1": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              6427,
+              6354,
+              7085
+            ],
+            "min_changed_pixels": 6354,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              7258,
+              7538,
+              6955
+            ],
+            "min_changed_pixels": 6955,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              7919,
+              7716,
+              7875
+            ],
+            "min_changed_pixels": 7716,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              6173,
+              6799,
+              6746
+            ],
+            "min_changed_pixels": 6173,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              5595,
+              4622,
+              3300
+            ],
+            "min_changed_pixels": 3300,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              6408,
+              6776,
+              6350
+            ],
+            "min_changed_pixels": 6350,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "hydro_2": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              8046,
+              7758,
+              8774
+            ],
+            "min_changed_pixels": 7758,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              9166,
+              9211,
+              8644
+            ],
+            "min_changed_pixels": 8644,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              9761,
+              9075,
+              9537
+            ],
+            "min_changed_pixels": 9075,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              7719,
+              8312,
+              8419
+            ],
+            "min_changed_pixels": 7719,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6891,
+              5639,
+              4066
+            ],
+            "min_changed_pixels": 4066,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              7813,
+              8370,
+              8528
+            ],
+            "min_changed_pixels": 7813,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "hydro_3": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              5622,
+              5632,
+              6372
+            ],
+            "min_changed_pixels": 5622,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              6538,
+              6615,
+              6212
+            ],
+            "min_changed_pixels": 6212,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              6713,
+              6417,
+              6438
+            ],
+            "min_changed_pixels": 6417,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              5286,
+              6012,
+              5622
+            ],
+            "min_changed_pixels": 5286,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              5100,
+              3964,
+              2754
+            ],
+            "min_changed_pixels": 2754,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              5515,
+              6056,
+              6502
+            ],
+            "min_changed_pixels": 5515,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "terra_1": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              7848,
+              7539,
+              8401
+            ],
+            "min_changed_pixels": 7539,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              8981,
+              9264,
+              8696
+            ],
+            "min_changed_pixels": 8696,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              9331,
+              8676,
+              9266
+            ],
+            "min_changed_pixels": 8676,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              7540,
+              8207,
+              7996
+            ],
+            "min_changed_pixels": 7540,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6765,
+              5205,
+              3786
+            ],
+            "min_changed_pixels": 3786,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              7638,
+              8136,
+              8350
+            ],
+            "min_changed_pixels": 7638,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "terra_2": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              6804,
+              6663,
+              7472
+            ],
+            "min_changed_pixels": 6663,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              7973,
+              8133,
+              7571
+            ],
+            "min_changed_pixels": 7571,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              8551,
+              7798,
+              8000
+            ],
+            "min_changed_pixels": 7798,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              6573,
+              7197,
+              7046
+            ],
+            "min_changed_pixels": 6573,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              5930,
+              4537,
+              3201
+            ],
+            "min_changed_pixels": 3201,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              6650,
+              7346,
+              7750
+            ],
+            "min_changed_pixels": 6650,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "terra_3": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              7945,
+              7631,
+              8539
+            ],
+            "min_changed_pixels": 7631,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              9080,
+              9491,
+              8802
+            ],
+            "min_changed_pixels": 8802,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              9826,
+              9039,
+              9324
+            ],
+            "min_changed_pixels": 9039,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              7908,
+              8547,
+              8231
+            ],
+            "min_changed_pixels": 7908,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6693,
+              5242,
+              3871
+            ],
+            "min_changed_pixels": 3871,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              7751,
+              8197,
+              8446
+            ],
+            "min_changed_pixels": 7751,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "volt_1": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              4890,
+              4838,
+              5607
+            ],
+            "min_changed_pixels": 4838,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              5785,
+              6084,
+              5481
+            ],
+            "min_changed_pixels": 5481,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              6061,
+              6391,
+              6255
+            ],
+            "min_changed_pixels": 6061,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              4547,
+              5254,
+              4984
+            ],
+            "min_changed_pixels": 4547,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              4254,
+              3386,
+              2659
+            ],
+            "min_changed_pixels": 2659,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              4831,
+              5545,
+              5933
+            ],
+            "min_changed_pixels": 4831,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "volt_2": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              5855,
+              4376,
+              7547
+            ],
+            "min_changed_pixels": 4376,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              7064,
+              7775,
+              7211
+            ],
+            "min_changed_pixels": 7064,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              8790,
+              8185,
+              8400
+            ],
+            "min_changed_pixels": 8185,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              7662,
+              8973,
+              8382
+            ],
+            "min_changed_pixels": 7662,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6949,
+              5309,
+              3919
+            ],
+            "min_changed_pixels": 3919,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              6704,
+              7723,
+              6662
+            ],
+            "min_changed_pixels": 6662,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "volt_3": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              7771,
+              5808,
+              9646
+            ],
+            "min_changed_pixels": 5808,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              9329,
+              9158,
+              8873
+            ],
+            "min_changed_pixels": 8873,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              11617,
+              9595,
+              10449
+            ],
+            "min_changed_pixels": 9595,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              9116,
+              11091,
+              10842
+            ],
+            "min_changed_pixels": 9116,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              8811,
+              6983,
+              5109
+            ],
+            "min_changed_pixels": 5109,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              9144,
+              9222,
+              8057
+            ],
+            "min_changed_pixels": 8057,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "lux_1": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              4902,
+              3507,
+              7067
+            ],
+            "min_changed_pixels": 3507,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              7217,
+              7261,
+              6509
+            ],
+            "min_changed_pixels": 6509,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              9537,
+              7449,
+              8139
+            ],
+            "min_changed_pixels": 7449,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              6652,
+              8514,
+              8121
+            ],
+            "min_changed_pixels": 6652,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6824,
+              5068,
+              3721
+            ],
+            "min_changed_pixels": 3721,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              6351,
+              6457,
+              5024
+            ],
+            "min_changed_pixels": 5024,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "lux_2": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              7817,
+              5827,
+              9608
+            ],
+            "min_changed_pixels": 5827,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              9730,
+              9455,
+              9178
+            ],
+            "min_changed_pixels": 9178,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              11484,
+              9559,
+              10015
+            ],
+            "min_changed_pixels": 9559,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              9908,
+              10543,
+              10943
+            ],
+            "min_changed_pixels": 9908,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              9017,
+              7094,
+              5091
+            ],
+            "min_changed_pixels": 5091,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              10241,
+              10483,
+              8572
+            ],
+            "min_changed_pixels": 8572,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "lux_3": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              4710,
+              4097,
+              5841
+            ],
+            "min_changed_pixels": 4097,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              6184,
+              6078,
+              6032
+            ],
+            "min_changed_pixels": 6032,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              8031,
+              7105,
+              7316
+            ],
+            "min_changed_pixels": 7105,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              6536,
+              6946,
+              6877
+            ],
+            "min_changed_pixels": 6536,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              5690,
+              4721,
+              3403
+            ],
+            "min_changed_pixels": 3403,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              6099,
+              6538,
+              6159
+            ],
+            "min_changed_pixels": 6099,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "umbra_1": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              5022,
+              3324,
+              6853
+            ],
+            "min_changed_pixels": 3324,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              6841,
+              6752,
+              6570
+            ],
+            "min_changed_pixels": 6570,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              8941,
+              7206,
+              8008
+            ],
+            "min_changed_pixels": 7206,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              5884,
+              8059,
+              7797
+            ],
+            "min_changed_pixels": 5884,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6538,
+              5021,
+              3825
+            ],
+            "min_changed_pixels": 3825,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              5360,
+              5891,
+              5309
+            ],
+            "min_changed_pixels": 5309,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "umbra_2": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              7229,
+              5115,
+              9097
+            ],
+            "min_changed_pixels": 5115,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              8080,
+              8087,
+              8066
+            ],
+            "min_changed_pixels": 8066,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              10827,
+              8452,
+              9059
+            ],
+            "min_changed_pixels": 8452,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              8381,
+              10491,
+              10272
+            ],
+            "min_changed_pixels": 8381,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              8384,
+              6406,
+              4618
+            ],
+            "min_changed_pixels": 4618,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              8079,
+              8127,
+              6602
+            ],
+            "min_changed_pixels": 6602,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      },
+      "umbra_3": {
+        "dimensions": "512x768",
+        "grid": "4x6 (128x128 per frame)",
+        "rows_verified": {
+          "idle": {
+            "adjacent_changed_pixels": [
+              5776,
+              4293,
+              7362
+            ],
+            "min_changed_pixels": 4293,
+            "distinct_frames_verified": true
+          },
+          "idle_alt": {
+            "adjacent_changed_pixels": [
+              7164,
+              7567,
+              7200
+            ],
+            "min_changed_pixels": 7164,
+            "distinct_frames_verified": true
+          },
+          "attack": {
+            "adjacent_changed_pixels": [
+              9559,
+              7987,
+              8378
+            ],
+            "min_changed_pixels": 7987,
+            "distinct_frames_verified": true
+          },
+          "hit": {
+            "adjacent_changed_pixels": [
+              7199,
+              8420,
+              8233
+            ],
+            "min_changed_pixels": 7199,
+            "distinct_frames_verified": true
+          },
+          "faint": {
+            "adjacent_changed_pixels": [
+              6659,
+              5336,
+              4069
+            ],
+            "min_changed_pixels": 4069,
+            "distinct_frames_verified": true
+          },
+          "evolve": {
+            "adjacent_changed_pixels": [
+              6623,
+              7031,
+              6483
+            ],
+            "min_changed_pixels": 6483,
+            "distinct_frames_verified": true
+          }
+        },
+        "status": "VERIFIED_6X4_SPRITESHEET"
+      }
+    }
+  },
+  "icon_uniqueness_verification": {
+    "total_icons": 24,
+    "unique_sha256_hashes": 24,
+    "all_icons_distinct": true
+  },
+  "audio_license_verification": {
+    "total_tracks": 0,
+    "credits_documented": false,
+    "license_type": "CC0 1.0 Universal / Public Domain"
+  },
   "assets": [
     {
-      "file": "monster_sprite/hydro_1.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 24.83,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/hydro_1_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 24.61,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/hydro_2.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 40.45,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/hydro_2_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 40.23,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/hydro_3.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 61.81,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/hydro_3_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 61.59,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/lux_1.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 25.09,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/lux_1_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 24.87,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/lux_2.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 40.71,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/lux_2_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 40.49,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/lux_3.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 61.72,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/lux_3_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 61.5,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/pyro_1.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 25.26,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/pyro_1_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 25.04,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/pyro_2.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 39.24,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/pyro_2_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 39.02,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/pyro_3.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 59.46,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/pyro_3_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 59.24,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/terra_1.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 27.6,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/terra_1_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 27.43,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/terra_2.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 41.93,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/terra_2_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 41.75,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/terra_3.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 62.59,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/terra_3_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 62.33,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/umbra_1.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 23.87,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/umbra_1_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 23.65,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/umbra_2.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 38.54,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/umbra_2_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 38.32,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/umbra_3.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 59.11,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/umbra_3_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 58.9,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/volt_1.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 23.96,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/volt_1_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 23.74,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/volt_2.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 40.36,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/volt_2_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 40.15,
-      "unique_rgba_colors": 7,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/volt_3.png",
-      "resolution": "192x192",
-      "pixels_analyzed": 36864,
-      "opaque_coverage_pct": 61.55,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "monster_sprite/volt_3_anim.png",
-      "resolution": "384x192",
-      "pixels_analyzed": 73728,
-      "opaque_coverage_pct": 61.33,
-      "unique_rgba_colors": 8,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "evolution_sheet/sheet_earth.png",
-      "resolution": "1200x540",
-      "pixels_analyzed": 648000,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 1842,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "evolution_sheet/sheet_fire.png",
-      "resolution": "1200x540",
-      "pixels_analyzed": 648000,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 1918,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "evolution_sheet/sheet_light.png",
-      "resolution": "1200x540",
-      "pixels_analyzed": 648000,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 1861,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "evolution_sheet/sheet_shadow.png",
-      "resolution": "1200x540",
-      "pixels_analyzed": 648000,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 1833,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "evolution_sheet/sheet_storm.png",
-      "resolution": "1200x540",
-      "pixels_analyzed": 648000,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 1854,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "evolution_sheet/sheet_water.png",
-      "resolution": "1200x540",
-      "pixels_analyzed": 648000,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 1841,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_backpack.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 43.75,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_bldg_forge.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_bldg_mine.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 43.75,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_bldg_reactor.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 27.78,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_bldg_sanctuary.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_capture_basic.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_capture_master.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_citadel.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 43.75,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_codex.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 43.75,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_crystals.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 27.78,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_elem_earth.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_elem_fire.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_elem_light.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_elem_shadow.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_elem_storm.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_elem_water.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_energy.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 34.72,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_evo_crown.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 43.75,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_gold.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_stars.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 34.72,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_summon_egg.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 27.78,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_sword_pvp.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 34.72,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_ton.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 27.78,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "ui_icon/icon_xp_fruit.png",
-      "resolution": "96x96",
-      "pixels_analyzed": 9216,
-      "opaque_coverage_pct": 37.5,
-      "unique_rgba_colors": 5,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "scene_background/battle_arena_bg.png",
-      "resolution": "1376x768",
-      "pixels_analyzed": 1056768,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 172868,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "scene_background/citadel_hub_bg.png",
-      "resolution": "1408x768",
-      "pixels_analyzed": 1081344,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 522024,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "scene_background/summon_altar_bg.png",
-      "resolution": "1408x768",
-      "pixels_analyzed": 1081344,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 207399,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
-    },
-    {
-      "file": "scene_background/title_hero_bg.png",
-      "resolution": "1408x768",
-      "pixels_analyzed": 1081344,
-      "opaque_coverage_pct": 100.0,
-      "unique_rgba_colors": 397551,
-      "orphans_repaired": 0,
-      "alpha_snapped": 0,
-      "qa_verdict": "VERIFIED_CRISP_2D_PIXEL_ART"
+      "file": "scenes/battle_arena_bg.png",
+      "path": "/assets/scenes/battle_arena_bg.png",
+      "category": "scenes",
+      "dimensions": "1376x768",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/BattleArena4v4.tsx"
+      ],
+      "source": "First-Party AI 2D Pixel Art (generate_image)",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "scenes/citadel_hub_bg.png",
+      "path": "/assets/scenes/citadel_hub_bg.png",
+      "category": "scenes",
+      "dimensions": "1408x768",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/CitadelHub.tsx"
+      ],
+      "source": "First-Party AI 2D Pixel Art (generate_image)",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "scenes/summon_altar_bg.png",
+      "path": "/assets/scenes/summon_altar_bg.png",
+      "category": "scenes",
+      "dimensions": "1408x768",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/EvolutionCeremonyModal.tsx",
+        "src/components/TeamSanctuary.tsx"
+      ],
+      "source": "First-Party AI 2D Pixel Art (generate_image)",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "scenes/title_hero_bg.png",
+      "path": "/assets/scenes/title_hero_bg.png",
+      "category": "scenes",
+      "dimensions": "1408x768",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx"
+      ],
+      "source": "First-Party AI 2D Pixel Art (generate_image)",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "sheets/sheet_earth.png",
+      "path": "/assets/sheets/sheet_earth.png",
+      "category": "sheets",
+      "dimensions": "1200x540",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Compiled by scripts/build_production_assets.py",
+      "license": "First-Party / CC0 Composite",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "sheets/sheet_fire.png",
+      "path": "/assets/sheets/sheet_fire.png",
+      "category": "sheets",
+      "dimensions": "1200x540",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Compiled by scripts/build_production_assets.py",
+      "license": "First-Party / CC0 Composite",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "sheets/sheet_light.png",
+      "path": "/assets/sheets/sheet_light.png",
+      "category": "sheets",
+      "dimensions": "1200x540",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Compiled by scripts/build_production_assets.py",
+      "license": "First-Party / CC0 Composite",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "sheets/sheet_shadow.png",
+      "path": "/assets/sheets/sheet_shadow.png",
+      "category": "sheets",
+      "dimensions": "1200x540",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Compiled by scripts/build_production_assets.py",
+      "license": "First-Party / CC0 Composite",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "sheets/sheet_storm.png",
+      "path": "/assets/sheets/sheet_storm.png",
+      "category": "sheets",
+      "dimensions": "1200x540",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Compiled by scripts/build_production_assets.py",
+      "license": "First-Party / CC0 Composite",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "sheets/sheet_water.png",
+      "path": "/assets/sheets/sheet_water.png",
+      "category": "sheets",
+      "dimensions": "1200x540",
+      "fill_ratio": 1.0,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Compiled by scripts/build_production_assets.py",
+      "license": "First-Party / CC0 Composite",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/hydro_1_sheet.png",
+      "path": "/assets/spritesheets/hydro_1_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.326,
+      "semi_transparent_ratio": 0.0446,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/hydro_2_sheet.png",
+      "path": "/assets/spritesheets/hydro_2_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.392,
+      "semi_transparent_ratio": 0.0549,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/hydro_3_sheet.png",
+      "path": "/assets/spritesheets/hydro_3_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.288,
+      "semi_transparent_ratio": 0.0385,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/lux_1_sheet.png",
+      "path": "/assets/spritesheets/lux_1_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.41,
+      "semi_transparent_ratio": 0.0563,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/lux_2_sheet.png",
+      "path": "/assets/spritesheets/lux_2_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.556,
+      "semi_transparent_ratio": 0.078,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/lux_3_sheet.png",
+      "path": "/assets/spritesheets/lux_3_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.323,
+      "semi_transparent_ratio": 0.044,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/pyro_1_sheet.png",
+      "path": "/assets/spritesheets/pyro_1_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.284,
+      "semi_transparent_ratio": 0.0375,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/pyro_2_sheet.png",
+      "path": "/assets/spritesheets/pyro_2_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.354,
+      "semi_transparent_ratio": 0.0481,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/pyro_3_sheet.png",
+      "path": "/assets/spritesheets/pyro_3_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.223,
+      "semi_transparent_ratio": 0.0288,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/terra_1_sheet.png",
+      "path": "/assets/spritesheets/terra_1_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.391,
+      "semi_transparent_ratio": 0.054,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/terra_2_sheet.png",
+      "path": "/assets/spritesheets/terra_2_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.313,
+      "semi_transparent_ratio": 0.0417,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/terra_3_sheet.png",
+      "path": "/assets/spritesheets/terra_3_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.373,
+      "semi_transparent_ratio": 0.0511,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/umbra_1_sheet.png",
+      "path": "/assets/spritesheets/umbra_1_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.376,
+      "semi_transparent_ratio": 0.0517,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/umbra_2_sheet.png",
+      "path": "/assets/spritesheets/umbra_2_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.506,
+      "semi_transparent_ratio": 0.0705,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/umbra_3_sheet.png",
+      "path": "/assets/spritesheets/umbra_3_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.412,
+      "semi_transparent_ratio": 0.057,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/volt_1_sheet.png",
+      "path": "/assets/spritesheets/volt_1_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.246,
+      "semi_transparent_ratio": 0.0318,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/volt_2_sheet.png",
+      "path": "/assets/spritesheets/volt_2_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.417,
+      "semi_transparent_ratio": 0.0574,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "spritesheets/volt_3_sheet.png",
+      "path": "/assets/spritesheets/volt_3_sheet.png",
+      "category": "spritesheets",
+      "dimensions": "512x768",
+      "fill_ratio": 0.547,
+      "semi_transparent_ratio": 0.077,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/hydro_1.png",
+      "path": "/assets/monsters/hydro_1.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.324,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/hydro_1_anim.png",
+      "path": "/assets/monsters/hydro_1_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.341,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/hydro_2.png",
+      "path": "/assets/monsters/hydro_2.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.396,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/hydro_2_anim.png",
+      "path": "/assets/monsters/hydro_2_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.413,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/hydro_3.png",
+      "path": "/assets/monsters/hydro_3.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.285,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/hydro_3_anim.png",
+      "path": "/assets/monsters/hydro_3_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.302,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/lux_1.png",
+      "path": "/assets/monsters/lux_1.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.423,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/lux_1_anim.png",
+      "path": "/assets/monsters/lux_1_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.447,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/lux_2.png",
+      "path": "/assets/monsters/lux_2.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.582,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/lux_2_anim.png",
+      "path": "/assets/monsters/lux_2_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.611,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/lux_3.png",
+      "path": "/assets/monsters/lux_3.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.319,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/lux_3_anim.png",
+      "path": "/assets/monsters/lux_3_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.337,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/pyro_1.png",
+      "path": "/assets/monsters/pyro_1.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.28,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/CodexAndPixelQA.tsx"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/pyro_1_anim.png",
+      "path": "/assets/monsters/pyro_1_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.295,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/pyro_2.png",
+      "path": "/assets/monsters/pyro_2.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.354,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/pyro_2_anim.png",
+      "path": "/assets/monsters/pyro_2_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.374,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/pyro_3.png",
+      "path": "/assets/monsters/pyro_3.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.212,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/pyro_3_anim.png",
+      "path": "/assets/monsters/pyro_3_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.226,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/terra_1.png",
+      "path": "/assets/monsters/terra_1.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.397,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/terra_1_anim.png",
+      "path": "/assets/monsters/terra_1_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.417,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/terra_2.png",
+      "path": "/assets/monsters/terra_2.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.309,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/terra_2_anim.png",
+      "path": "/assets/monsters/terra_2_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.326,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/terra_3.png",
+      "path": "/assets/monsters/terra_3.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.377,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/terra_3_anim.png",
+      "path": "/assets/monsters/terra_3_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.395,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/umbra_1.png",
+      "path": "/assets/monsters/umbra_1.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.382,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/umbra_1_anim.png",
+      "path": "/assets/monsters/umbra_1_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.402,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/umbra_2.png",
+      "path": "/assets/monsters/umbra_2.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.529,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/umbra_2_anim.png",
+      "path": "/assets/monsters/umbra_2_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.555,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/umbra_3.png",
+      "path": "/assets/monsters/umbra_3.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.422,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/umbra_3_anim.png",
+      "path": "/assets/monsters/umbra_3_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.441,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/volt_1.png",
+      "path": "/assets/monsters/volt_1.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.236,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/volt_1_anim.png",
+      "path": "/assets/monsters/volt_1_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.25,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "First-Party AI 2D Pixel Art + scripts/build_production_assets.py",
+      "license": "First-Party Commercial",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/volt_2.png",
+      "path": "/assets/monsters/volt_2.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.429,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/volt_2_anim.png",
+      "path": "/assets/monsters/volt_2_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.451,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/volt_3.png",
+      "path": "/assets/monsters/volt_3.png",
+      "category": "monsters",
+      "dimensions": "192x192",
+      "fill_ratio": 0.574,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "monsters/volt_3_anim.png",
+      "path": "/assets/monsters/volt_3_anim.png",
+      "category": "monsters",
+      "dimensions": "384x192",
+      "fill_ratio": 0.604,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "DCSS RLTiles (crawl/crawl) + scripts/build_production_assets.py",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_backpack.png",
+      "path": "/assets/icons/icon_backpack.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.697,
+      "semi_transparent_ratio": 0.1367,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/CitadelHub.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_bldg_forge.png",
+      "path": "/assets/icons/icon_bldg_forge.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/CitadelHub.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_bldg_mine.png",
+      "path": "/assets/icons/icon_bldg_mine.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/CitadelHub.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_bldg_reactor.png",
+      "path": "/assets/icons/icon_bldg_reactor.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/CitadelHub.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_bldg_sanctuary.png",
+      "path": "/assets/icons/icon_bldg_sanctuary.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/CitadelHub.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_capture_basic.png",
+      "path": "/assets/icons/icon_capture_basic.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.266,
+      "semi_transparent_ratio": 0.1016,
+      "used_by": [
+        "src/components/BattleArena4v4.tsx",
+        "src/components/CitadelHub.tsx",
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_capture_master.png",
+      "path": "/assets/icons/icon_capture_master.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.747,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/BattleArena4v4.tsx",
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_citadel.png",
+      "path": "/assets/icons/icon_citadel.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.682,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_codex.png",
+      "path": "/assets/icons/icon_codex.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.562,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/TeamSanctuary.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_crystals.png",
+      "path": "/assets/icons/icon_crystals.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.484,
+      "semi_transparent_ratio": 0.4834,
+      "used_by": [
+        "src/App.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_elem_earth.png",
+      "path": "/assets/icons/icon_elem_earth.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_elem_fire.png",
+      "path": "/assets/icons/icon_elem_fire.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_elem_light.png",
+      "path": "/assets/icons/icon_elem_light.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.782,
+      "semi_transparent_ratio": 0.001,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_elem_shadow.png",
+      "path": "/assets/icons/icon_elem_shadow.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.782,
+      "semi_transparent_ratio": 0.001,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_elem_storm.png",
+      "path": "/assets/icons/icon_elem_storm.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_elem_water.png",
+      "path": "/assets/icons/icon_elem_water.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.956,
+      "semi_transparent_ratio": 0.1904,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_energy.png",
+      "path": "/assets/icons/icon_energy.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.37,
+      "semi_transparent_ratio": 0.0947,
+      "used_by": [
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_evo_crown.png",
+      "path": "/assets/icons/icon_evo_crown.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.365,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/CitadelHub.tsx",
+        "src/components/EvolutionCeremonyModal.tsx",
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_gold.png",
+      "path": "/assets/icons/icon_gold.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.755,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/BattleArena4v4.tsx",
+        "src/components/CitadelHub.tsx",
+        "src/components/HybridStoreAndWallet.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_stars.png",
+      "path": "/assets/icons/icon_stars.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.766,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/HybridStoreAndWallet.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_summon_egg.png",
+      "path": "/assets/icons/icon_summon_egg.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.652,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/TeamSanctuary.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_sword_pvp.png",
+      "path": "/assets/icons/icon_sword_pvp.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.37,
+      "semi_transparent_ratio": 0.1279,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/BattleArena4v4.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_ton.png",
+      "path": "/assets/icons/icon_ton.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.435,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/App.tsx",
+        "src/components/BattleArena4v4.tsx",
+        "src/components/HybridStoreAndWallet.tsx"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
+    },
+    {
+      "file": "icons/icon_xp_fruit.png",
+      "path": "/assets/icons/icon_xp_fruit.png",
+      "category": "icons",
+      "dimensions": "96x96",
+      "fill_ratio": 0.303,
+      "semi_transparent_ratio": 0.0,
+      "used_by": [
+        "src/components/CitadelHub.tsx",
+        "src/components/TeamSanctuary.tsx",
+        "src/data/monstersData.ts"
+      ],
+      "source": "Dungeon Crawl Stone Soup RLTiles (crawl/crawl)",
+      "license": "CC0 1.0 / Public Domain",
+      "status": "VERIFIED_PRODUCTION_ASSET"
     }
   ]
 }

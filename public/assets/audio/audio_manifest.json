@@ -1,0 +1,100 @@
+{
+  "audio_assets": [
+    {
+      "filename": "bgm_citadel.opus",
+      "title": "8-bit Music for GameDev - 02. Perilous Dungeon",
+      "author": "HydroGene",
+      "source_url": "https://commons.wikimedia.org/wiki/File:8-bit_Music_for_GameDev_-_02._Perilous_Dungeon.opus",
+      "license": "CC0 1.0 Universal (Public Domain Dedication)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "8-bit Music for GameDev - 02. Perilous Dungeon by HydroGene (CC0 1.0, via Wikimedia Commons)",
+      "download_date": "2026-10-02",
+      "notes": "Used as Citadel & Sanctuary background music (BGM)."
+    },
+    {
+      "filename": "bgm_battle_4v4.opus",
+      "title": "8-bit Music for GameDev - 01. Slay The Evil",
+      "author": "HydroGene",
+      "source_url": "https://commons.wikimedia.org/wiki/File:8-bit_Music_for_GameDev_-_01._Slay_The_Evil.opus",
+      "license": "CC0 1.0 Universal (Public Domain Dedication)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "8-bit Music for GameDev - 01. Slay The Evil by HydroGene (CC0 1.0, via Wikimedia Commons)",
+      "download_date": "2026-10-02",
+      "notes": "Used as standard 4v4 Tactical Arena combat theme."
+    },
+    {
+      "filename": "bgm_pvp_wager.opus",
+      "title": "8-bit Music for GameDev - 03. Boss Battle",
+      "author": "HydroGene",
+      "source_url": "https://commons.wikimedia.org/wiki/File:8-bit_Music_for_GameDev_-_03._Boss_Battle.opus",
+      "license": "CC0 1.0 Universal (Public Domain Dedication)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "8-bit Music for GameDev - 03. Boss Battle by HydroGene (CC0 1.0, via Wikimedia Commons)",
+      "download_date": "2026-10-02",
+      "notes": "Used as High-Stakes Boss & PvP Matchmaking Arena theme."
+    },
+    {
+      "filename": "sfx_attack.ogg",
+      "title": "Explosion 10 (Retro Impact SFX)",
+      "author": "tcpp",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Explosion_10.ogg",
+      "license": "Public Domain / CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "Explosion 10 by tcpp (Public Domain, via Wikimedia Commons)",
+      "download_date": "2026-10-02",
+      "notes": "Used for monster skill attack impacts in 4v4 combat."
+    },
+    {
+      "filename": "sfx_ultimate.ogg",
+      "title": "Juno-60-jp4 Analog Synth Chord Blast",
+      "author": "Raymangold22",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Juno-60-jp4.ogg",
+      "license": "CC0 1.0 Universal (Public Domain Dedication)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "Juno-60-jp4 by Raymangold22 (CC0 1.0, via Wikimedia Commons)",
+      "download_date": "2026-10-02",
+      "notes": "Used for 4v4 Ultimate Skill activation and Evolution energy burst."
+    },
+    {
+      "filename": "sfx_evolve.wav",
+      "title": "415061 gsb1039 clock-chime-tubebells-handbells-vibes",
+      "author": "gsb1039",
+      "source_url": "https://commons.wikimedia.org/wiki/File:415061_gsb1039_clock-chime-tubebells-handbells-vibes.wav",
+      "license": "CC0 1.0 Universal (Public Domain Dedication)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "clock-chime-tubebells-handbells-vibes by gsb1039 (CC0 1.0, via Wikimedia Commons / Freesound #415061)",
+      "download_date": "2026-10-02",
+      "notes": "Used for Monster Evolution Ceremony fanfare and Victory chime."
+    },
+    {
+      "filename": "sfx_capture.ogg",
+      "title": "Mini Acerto - Atenção Chime",
+      "author": "Rafael Tavares Juliani",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Mini_Acerto_-_Aten%C3%A7%C3%A3o.ogg",
+      "license": "CC0 1.0 Universal (Public Domain Dedication)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "Mini Acerto - Atenção by Rafael Tavares Juliani (CC0 1.0, via Wikimedia Commons)",
+      "download_date": "2026-10-02",
+      "notes": "Used for Capture Orb success notification."
+    },
+    {
+      "filename": "sfx_coin.ogg",
+      "title": "Sound Effect - Door Bell Chime",
+      "author": "Wikimedia Commons Community Upload",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Sound_Effect_-_Door_Bell.ogg",
+      "license": "CC0 1.0 Universal (Public Domain Dedication)",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "attribution_required": false,
+      "attribution_text": "Sound Effect - Door Bell (CC0 1.0, via Wikimedia Commons)",
+      "download_date": "2026-10-02",
+      "notes": "Used for Gold & Essence harvest collection chime."
+    }
+  ]
+}

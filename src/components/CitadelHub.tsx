@@ -26,7 +26,7 @@ export const CitadelHub: React.FC<Props> = ({ profile, onUpdateProfile }) => {
 
     const elems: ElementType[] = ['fire', 'water', 'earth', 'storm', 'light', 'shadow'];
     const pickedElem = elems[Math.floor(Math.random() * elems.length)];
-    const essenceKey = `essence_${pickedElem}`;
+    const essenceKey = `elem_${pickedElem}`;
 
     onUpdateProfile((prev) => ({
       ...prev,
@@ -227,7 +227,7 @@ export const CitadelHub: React.FC<Props> = ({ profile, onUpdateProfile }) => {
             </div>
             <button
               onClick={() =>
-                handleCraftItem('capture_orb_basic', 'Orbes de Captura', 450, 0, 3)
+                handleCraftItem('capture_basic', 'Orbes de Captura', 450, 0, 3)
               }
               className="pixel-btn px-3 py-1.5 rounded bg-sky-700 hover:bg-sky-600 text-xs font-bold text-white"
             >
@@ -261,7 +261,7 @@ export const CitadelHub: React.FC<Props> = ({ profile, onUpdateProfile }) => {
             </div>
             <button
               onClick={() =>
-                handleCraftItem('evolution_crown', 'Corona de Evolución', 0, 35, 1)
+                handleCraftItem('evo_crown', 'Corona de Evolución', 0, 35, 1)
               }
               className="pixel-btn px-3 py-1.5 rounded bg-amber-600 hover:bg-amber-500 text-xs font-bold text-slate-950"
             >

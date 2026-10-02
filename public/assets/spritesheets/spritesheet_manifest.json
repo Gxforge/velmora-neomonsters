@@ -1,0 +1,349 @@
+{
+  "schema_version": "2.0",
+  "native_frame_width": 128,
+  "native_frame_height": 128,
+  "sheet_width": 512,
+  "sheet_height": 768,
+  "columns": 4,
+  "rows": 6,
+  "animations": {
+    "idle": {
+      "row": 0,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frame_duration_ms": 180,
+      "loop": true
+    },
+    "idle_alt": {
+      "row": 1,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frame_duration_ms": 160,
+      "loop": true
+    },
+    "attack": {
+      "row": 2,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frame_duration_ms": 110,
+      "loop": false
+    },
+    "hit": {
+      "row": 3,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frame_duration_ms": 120,
+      "loop": false
+    },
+    "faint": {
+      "row": 4,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frame_duration_ms": 180,
+      "loop": false
+    },
+    "evolve": {
+      "row": 5,
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "frame_duration_ms": 150,
+      "loop": true
+    }
+  },
+  "sheets": {
+    "pyro_1": {
+      "species_id": "pyro_1",
+      "name": "Ignisaur",
+      "element": "fire",
+      "stage": 1,
+      "file": "/assets/spritesheets/pyro_1_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "pyro_2": {
+      "species_id": "pyro_2",
+      "name": "Pyrodrake",
+      "element": "fire",
+      "stage": 2,
+      "file": "/assets/spritesheets/pyro_2_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "pyro_3": {
+      "species_id": "pyro_3",
+      "name": "Vulcanorex",
+      "element": "fire",
+      "stage": 3,
+      "file": "/assets/spritesheets/pyro_3_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "hydro_1": {
+      "species_id": "hydro_1",
+      "name": "Aquafin",
+      "element": "water",
+      "stage": 1,
+      "file": "/assets/spritesheets/hydro_1_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "hydro_2": {
+      "species_id": "hydro_2",
+      "name": "Tidevyrm",
+      "element": "water",
+      "stage": 2,
+      "file": "/assets/spritesheets/hydro_2_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "hydro_3": {
+      "species_id": "hydro_3",
+      "name": "Abyssalord",
+      "element": "water",
+      "stage": 3,
+      "file": "/assets/spritesheets/hydro_3_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "terra_1": {
+      "species_id": "terra_1",
+      "name": "Bramblecub",
+      "element": "earth",
+      "stage": 1,
+      "file": "/assets/spritesheets/terra_1_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "terra_2": {
+      "species_id": "terra_2",
+      "name": "Craghorn",
+      "element": "earth",
+      "stage": 2,
+      "file": "/assets/spritesheets/terra_2_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "terra_3": {
+      "species_id": "terra_3",
+      "name": "Gaiawarden",
+      "element": "earth",
+      "stage": 3,
+      "file": "/assets/spritesheets/terra_3_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "volt_1": {
+      "species_id": "volt_1",
+      "name": "Sparklynx",
+      "element": "storm",
+      "stage": 1,
+      "file": "/assets/spritesheets/volt_1_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "volt_2": {
+      "species_id": "volt_2",
+      "name": "Thunderfang",
+      "element": "storm",
+      "stage": 2,
+      "file": "/assets/spritesheets/volt_2_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "volt_3": {
+      "species_id": "volt_3",
+      "name": "Tempestarch",
+      "element": "storm",
+      "stage": 3,
+      "file": "/assets/spritesheets/volt_3_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "lux_1": {
+      "species_id": "lux_1",
+      "name": "Lumipup",
+      "element": "light",
+      "stage": 1,
+      "file": "/assets/spritesheets/lux_1_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "lux_2": {
+      "species_id": "lux_2",
+      "name": "Seraphwing",
+      "element": "light",
+      "stage": 2,
+      "file": "/assets/spritesheets/lux_2_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "lux_3": {
+      "species_id": "lux_3",
+      "name": "Solariarch",
+      "element": "light",
+      "stage": 3,
+      "file": "/assets/spritesheets/lux_3_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "umbra_1": {
+      "species_id": "umbra_1",
+      "name": "Shadeimp",
+      "element": "shadow",
+      "stage": 1,
+      "file": "/assets/spritesheets/umbra_1_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "umbra_2": {
+      "species_id": "umbra_2",
+      "name": "Voidstalker",
+      "element": "shadow",
+      "stage": 2,
+      "file": "/assets/spritesheets/umbra_2_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    },
+    "umbra_3": {
+      "species_id": "umbra_3",
+      "name": "Netherbane",
+      "element": "shadow",
+      "stage": 3,
+      "file": "/assets/spritesheets/umbra_3_sheet.png",
+      "frame_size": [
+        128,
+        128
+      ],
+      "grid": [
+        4,
+        6
+      ]
+    }
+  }
+}

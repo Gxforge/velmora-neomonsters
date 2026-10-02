@@ -1,1224 +1,1278 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ALL_MONSTERS,
   ELEMENT_META,
-  ElementType,
-  getElementMultiplier,
-  getMonsterStatsAtLevel,
-  MONSTER_SPECIES,
-  MonsterSkill,
+  MONSTERS_BY_ID,
   OwnedMonster,
-  SPECIES_BY_ID,
+  SkillSpec,
+  computeMonsterStats,
+  getElementMultiplier,
 } from '../data/monstersData';
-import { PlayerProfile, recordHouseTreasuryEvent, gameSupabase } from '../lib/supabase';
 import { soundManager } from '../lib/audio';
-import { Shield, Swords, Sparkles, Trophy, Flame, Coins, RefreshCw } from 'lucide-react';
 
-interface BattleUnit {
+type AnimRowName = 'idle' | 'idle_alt' | 'attack' | 'hit' | 'faint' | 'evolve';
+
+const ANIM_ROW_CONFIG: Record<AnimRowName, { row: number; durationMs: number; loop: boolean }> = {
+  idle: { row: 0, durationMs: 180, loop: true },
+  idle_alt: { row: 1, durationMs: 160, loop: true },
+  attack: { row: 2, durationMs: 110, loop: false },
+  hit: { row: 3, durationMs: 120, loop: false },
+  faint: { row: 4, durationMs: 180, loop: false },
+  evolve: { row: 5, durationMs: 150, loop: true },
+};
+
+interface CombatUnit {
   uid: string;
-  side: 'player' | 'enemy';
-  slotIndex: number; // 0..3 active frontline
+  instanceId: string;
   speciesId: string;
   name: string;
-  element: ElementType;
+  element: 'fire' | 'water' | 'earth' | 'storm' | 'light' | 'shadow';
+  stage: 1 | 2 | 3;
   level: number;
   maxHp: number;
   hp: number;
   atk: number;
   def: number;
   spd: number;
-  tu: number; // Time Units until next turn (Neo Monsters mechanic)
+  tu: number;
+  isPlayer: boolean;
+  slotIndex: number;
+  skills: SkillSpec[];
   shield: number;
-  atkBuff: boolean;
-  status: 'none' | 'burn' | 'poison' | 'stun';
-  passiveName: string;
-  skills: MonsterSkill[];
-  lungeOffset: number;
-  hitFlash: number;
+  animState: AnimRowName;
+  animStartedAt: number;
 }
 
-interface FloatingText {
+interface FloatingFx {
   id: number;
   x: number;
   y: number;
   text: string;
   color: string;
-  alpha: number;
+  createdAt: number;
 }
 
-interface ProjectileFx {
-  fromX: number;
-  fromY: number;
-  toX: number;
-  toY: number;
-  progress: number;
-  color: string;
+interface BattleArenaProps {
+  playerRoster: OwnedMonster[];
+  gold: number;
+  tonBalance: number;
+  energy: number;
+  inventory: Record<string, number>;
+  telegramId: number;
+  username: string;
+  onBattleComplete: (result: {
+    won: boolean;
+    mode: 'pve' | 'pvp_gold' | 'pvp_ton';
+    goldDelta: number;
+    tonDelta: number;
+    capturedMonster?: OwnedMonster;
+    itemDeltas?: Record<string, number>;
+    eloDelta: number;
+  }) => void;
 }
 
-interface Props {
-  profile: PlayerProfile;
-  ownedMonsters: OwnedMonster[];
-  onUpdateProfile: (updater: (prev: PlayerProfile) => PlayerProfile) => void;
-  onCaptureMonster: (speciesId: string, level: number) => void;
+interface PvpRoomTier {
+  id: string;
+  title: string;
+  mode: 'pvp_gold' | 'pvp_ton';
+  stakeGold: number;
+  stakeTon: number;
+  rakePct: number;
+  prizeDesc: string;
+  badge: string;
 }
 
-const WAGER_ROOMS = [
+const PVP_ROOMS: PvpRoomTier[] = [
   {
-    id: 'wild_expedition',
-    title: 'Expedición Salvaje 4v4 (PvE + Captura)',
-    subtitle: 'Captura nuevos monstruos para completar tu equipo 4v4 y gana Oro + Esencias',
-    entryTon: 0,
-    entryGold: 0,
-    potTon: 0,
-    winnerTon: 0,
-    houseRakeTon: 0,
-    rewardGold: 450,
-    badge: 'GRATIS • CAPTURA ACTIVA',
-    color: 'from-emerald-600 to-teal-800',
+    id: 'rookie_gold',
+    title: 'Arena Bronce (Oro)',
+    mode: 'pvp_gold',
+    stakeGold: 300,
+    stakeTon: 0,
+    rakePct: 10,
+    prizeDesc: 'Pozo: 600 Oro • Premio Neto: 540 Oro (10% Rake Casa)',
+    badge: 'SALA POPULAR',
   },
   {
-    id: 'wager_bronze',
-    title: 'Arena Bronce 4v4 (Apuesta TON)',
-    subtitle: 'Duelo táctico 4v4 • Bote: 1.00 TON (Comisión Casa 10%: 0.10 TON)',
-    entryTon: 0.5,
-    entryGold: 0,
-    potTon: 1.0,
-    winnerTon: 0.9,
-    houseRakeTon: 0.1,
-    rewardGold: 600,
-    badge: 'PREMIO: 0.90 TON',
-    color: 'from-sky-600 to-blue-900',
+    id: 'pro_ton',
+    title: 'Coliseo Soberano (TON)',
+    mode: 'pvp_ton',
+    stakeGold: 0,
+    stakeTon: 0.5,
+    rakePct: 10,
+    prizeDesc: 'Pozo: 1.00 TON • Premio Neto: 0.90 TON (0.10 TON Rake)',
+    badge: 'APUESTA REAL TON',
   },
   {
-    id: 'wager_elite',
-    title: 'Arena Élite 4v4 (Apuesta Alta)',
-    subtitle: 'Duelo táctico 4v4 • Bote: 4.00 TON (Comisión Casa 10%: 0.40 TON)',
-    entryTon: 2.0,
-    entryGold: 0,
-    potTon: 4.0,
-    winnerTon: 3.6,
-    houseRakeTon: 0.4,
-    rewardGold: 1500,
-    badge: 'PREMIO: 3.60 TON',
-    color: 'from-purple-600 to-indigo-950',
-  },
-  {
-    id: 'wager_sovereign',
-    title: 'Coliseo Soberano 4v4 (High Roller)',
-    subtitle: 'Duelo táctico 4v4 • Bote: 20.00 TON (Comisión Casa 10%: 2.00 TON)',
-    entryTon: 10.0,
-    entryGold: 0,
-    potTon: 20.0,
-    winnerTon: 18.0,
-    houseRakeTon: 2.0,
-    rewardGold: 5000,
-    badge: 'PREMIO: 18.00 TON',
-    color: 'from-amber-500 to-red-900',
+    id: 'whale_ton',
+    title: 'Cámara Mítica High-Roller',
+    mode: 'pvp_ton',
+    stakeGold: 0,
+    stakeTon: 2.0,
+    rakePct: 10,
+    prizeDesc: 'Pozo: 4.00 TON • Premio Neto: 3.60 TON (0.40 TON Rake)',
+    badge: 'VIP / ÉLITE',
   },
 ];
 
-export const BattleArena4v4: React.FC<Props> = ({
-  profile,
-  ownedMonsters,
-  onUpdateProfile,
-  onCaptureMonster,
+export const BattleArena4v4: React.FC<BattleArenaProps> = ({
+  playerRoster,
+  gold,
+  tonBalance,
+  energy,
+  inventory,
+  telegramId,
+  username,
+  onBattleComplete,
 }) => {
-  const [activeRoom, setActiveRoom] = useState<typeof WAGER_ROOMS[0] | null>(null);
-  const [units, setUnits] = useState<BattleUnit[]>([]);
-  const [playerBench, setPlayerBench] = useState<BattleUnit[]>([]);
-  const [enemyBench, setEnemyBench] = useState<BattleUnit[]>([]);
+  const [inBattle, setInBattle] = useState(false);
+  const [battleMode, setBattleMode] = useState<'pve' | 'pvp_gold' | 'pvp_ton'>('pve');
+  const [selectedRoom, setSelectedRoom] = useState<PvpRoomTier>(PVP_ROOMS[0]);
+  const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
+  const [opponentLabel, setOpponentLabel] = useState<string>('IA Salvaje');
+  const [openMatches, setOpenMatches] = useState<any[]>([]);
+  const [waitingRoom, setWaitingRoom] = useState<any | null>(null);
+  const [loadingMatchmaking, setLoadingMatchmaking] = useState(false);
+
+  const [playerFront, setPlayerFront] = useState<CombatUnit[]>([]);
+  const [playerBench, setPlayerBench] = useState<CombatUnit[]>([]);
+  const [enemyFront, setEnemyFront] = useState<CombatUnit[]>([]);
+  const [enemyBench, setEnemyBench] = useState<CombatUnit[]>([]);
+
   const [selectedTargetUid, setSelectedTargetUid] = useState<string | null>(null);
   const [battleLog, setBattleLog] = useState<string[]>([]);
-  const [winner, setWinner] = useState<'player' | 'enemy' | null>(null);
-  const [opponentName, setOpponentName] = useState<string>('Domador Salvaje');
-  const [isBusy, setIsBusy] = useState<boolean>(false);
+  const [floatingFx, setFloatingFx] = useState<FloatingFx[]>([]);
+  const [capturedThisMatch, setCapturedThisMatch] = useState<OwnedMonster | null>(null);
+  const [usedItems, setUsedItems] = useState<Record<string, number>>({});
+  const [battleOutcome, setBattleOutcome] = useState<'victory' | 'defeat' | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const imagesCacheRef = useRef<Record<string, HTMLImageElement>>({});
-  const floatingTextsRef = useRef<FloatingText[]>([]);
-  const projectileRef = useRef<ProjectileFx | null>(null);
-  const unitsRef = useRef<BattleUnit[]>([]);
-  unitsRef.current = units;
+  const spritesheetCacheRef = useRef<Record<string, HTMLImageElement>>({});
+  const bgImgRef = useRef<HTMLImageElement | null>(null);
 
-  // Preload arena background and monster sprites
-  useEffect(() => {
-    const urls = ['/assets/scenes/battle_arena_bg.png'];
-    MONSTER_SPECIES.forEach((s) => {
-      urls.push(`/assets/monsters/${s.id}.png`);
-      urls.push(`/assets/monsters/${s.id}_anim.png`);
-    });
-    urls.forEach((u) => {
-      if (!imagesCacheRef.current[u]) {
-        const img = new Image();
-        img.src = u;
-        imagesCacheRef.current[u] = img;
+  const fetchOpenPvpRooms = async () => {
+    try {
+      const r = await fetch('/api/pvp-matchmaking');
+      const d = await r.json();
+      if (Array.isArray(d.matches)) {
+        setOpenMatches(d.matches);
       }
+    } catch {
+      // Ignore offline preview error
+    }
+  };
+
+  useEffect(() => {
+    fetchOpenPvpRooms();
+  }, []);
+
+  // Preload arena background and all 18 6x4 Monster Sprite Sheets (/assets/spritesheets/<id>_sheet.png)
+  useEffect(() => {
+    const bg = new Image();
+    bg.src = '/assets/scenes/battle_arena_bg.png';
+    bgImgRef.current = bg;
+
+    ALL_MONSTERS.forEach((m) => {
+      const sheetImg = new Image();
+      sheetImg.src = `/assets/spritesheets/${m.id}_sheet.png`;
+      spritesheetCacheRef.current[m.id] = sheetImg;
     });
   }, []);
 
-  const addFloatingText = (x: number, y: number, text: string, color: string) => {
-    floatingTextsRef.current.push({
-      id: Math.random(),
-      x,
-      y,
-      text,
-      color,
-      alpha: 1.0,
-    });
+  const addLog = (msg: string) => {
+    setBattleLog((prev) => [msg, ...prev.slice(0, 24)]);
   };
 
-  // Start a 4v4 Battle
-  const startBattle = (room: typeof WAGER_ROOMS[0]) => {
-    if (room.entryTon > 0 && profile.ton_balance < room.entryTon) {
-      alert(`Saldo TON insuficiente (${profile.ton_balance.toFixed(2)} TON). Recarga en la Tienda/Billetera.`);
-      return;
-    }
-
-    // Deduct entry fee immediately if PvP wager
-    if (room.entryTon > 0) {
-      onUpdateProfile((prev) => ({
-        ...prev,
-        ton_balance: Number((prev.ton_balance - room.entryTon).toFixed(4)),
-      }));
-      soundManager.playBgm('pvp_wager');
-    } else {
-      soundManager.playBgm('battle_4v4');
-    }
-
-    // Build Player Squad (Frontline slots 1..4 + Bench slots 5..8)
-    const sortedTeam = [...ownedMonsters]
-      .filter((m) => m.teamSlot !== null)
-      .sort((a, b) => (a.teamSlot || 99) - (b.teamSlot || 99));
-
-    const effectiveTeam = sortedTeam.length > 0 ? sortedTeam : ownedMonsters.slice(0, 4);
-
-    const buildUnit = (
-      speciesId: string,
-      level: number,
-      side: 'player' | 'enemy',
-      slotIndex: number,
-      idx: number
-    ): BattleUnit => {
-      const sp = SPECIES_BY_ID[speciesId] || MONSTER_SPECIES[0];
-      const st = getMonsterStatsAtLevel(sp, level);
-      const initialTu = Math.max(10, Math.round(120 - st.spd * 0.45 + idx * 12));
-      const startShield = sp.element === 'earth' ? Math.round(st.hp * 0.15) : 0;
-      return {
-        uid: `${side}_${idx}_${speciesId}_${Math.random().toString(36).slice(2, 6)}`,
-        side,
-        slotIndex,
-        speciesId: sp.id,
-        name: sp.name,
-        element: sp.element,
-        level,
-        maxHp: st.hp,
-        hp: st.hp,
-        atk: st.atk,
-        def: st.def,
-        spd: st.spd,
-        tu: initialTu,
-        shield: startShield,
-        atkBuff: false,
-        status: 'none',
-        passiveName: sp.passive_trait.name,
-        skills: sp.skills,
-        lungeOffset: 0,
-        hitFlash: 0,
-      };
-    };
-
-    const pAll = effectiveTeam.map((m, i) =>
-      buildUnit(m.speciesId, m.level, 'player', i % 4, i)
-    );
-    const pFront = pAll.slice(0, 4).map((u, i) => ({ ...u, slotIndex: i }));
-    const pRes = pAll.slice(4, 8);
-
-    // Build Enemy 4v4 Squad scaled cleanly to player's team size & level
-    const avgLvl = Math.max(
-      3,
-      Math.round(pFront.reduce((acc, u) => acc + u.level, 0) / Math.max(1, pFront.length))
-    );
-    const enemyPool =
-      room.entryTon >= 2
-        ? MONSTER_SPECIES.filter((s) => s.stage >= 2)
-        : MONSTER_SPECIES.filter((s) => s.stage <= 2);
-
-    const eFront: BattleUnit[] = [];
-    for (let i = 0; i < 4; i++) {
-      const pick = enemyPool[Math.floor(Math.random() * enemyPool.length)];
-      const eLvl = room.id === 'wild_expedition' ? Math.max(2, avgLvl - 1) : avgLvl;
-      eFront.push(buildUnit(pick.id, eLvl, 'enemy', i, i));
-    }
-
-    // Normalize TU so lowest is 0
-    const allActive = [...pFront, ...eFront];
-    const minTu = Math.min(...allActive.map((u) => u.tu));
-    allActive.forEach((u) => {
-      u.tu = Math.max(0, u.tu - minTu);
-    });
-
-    const rivalNames = [
-      'Kaelen_TON',
-      'Valkyria_99',
-      'DrakoMaster',
-      'ShadowWhale',
-      'NeoTamer_ES',
-    ];
-    const opp =
-      room.id === 'wild_expedition'
-        ? 'Manada Elemental Salvaje (4v4)'
-        : `Domador @${rivalNames[Math.floor(Math.random() * rivalNames.length)]}`;
-
-    setOpponentName(opp);
-    setUnits(allActive);
-    setPlayerBench(pRes);
-    setEnemyBench([]);
-    setSelectedTargetUid(eFront[0]?.uid || null);
-    setWinner(null);
-    setIsBusy(false);
-    setActiveRoom(room);
-    setBattleLog([
-      `⚔️ ¡Comienza el combate 4v4 en ${room.title} contra ${opp}!`,
-      pFront.length < 4 && room.id === 'wild_expedition'
-        ? `💡 Consejo: Tienes ${pFront.length}/4 monstruos en campo. ¡Usa tus Orbes de Captura para atrapar monstruos rivales y completar tu escuadrón 4v4!`
-        : `⚡ Sistema de Tiempo (TU) activo: El monstruo con 0 TU actúa primero.`,
+  const spawnFx = (x: number, y: number, text: string, color: string) => {
+    setFloatingFx((prev) => [
+      ...prev,
+      { id: Date.now() + Math.random(), x, y, text, color, createdAt: performance.now() },
     ]);
   };
 
-  // Determine active actor (unit with minimum TU)
-  const activeActor =
-    units.length > 0 && !winner
-      ? [...units].sort((a, b) => a.tu - b.tu || b.spd - a.spd)[0]
-      : null;
+  const triggerUnitAnim = (uid: string, anim: AnimRowName) => {
+    const now = performance.now();
+    setPlayerFront((prev) =>
+      prev.map((u) => (u.uid === uid ? { ...u, animState: anim, animStartedAt: now } : u))
+    );
+    setEnemyFront((prev) =>
+      prev.map((u) => (u.uid === uid ? { ...u, animState: anim, animStartedAt: now } : u))
+    );
+  };
 
-  // Keep valid enemy target selected
-  useEffect(() => {
-    const enemies = units.filter((u) => u.side === 'enemy' && u.hp > 0);
-    if (enemies.length > 0 && (!selectedTargetUid || !enemies.some((e) => e.uid === selectedTargetUid))) {
-      setSelectedTargetUid(enemies[0].uid);
+  const buildCombatUnit = (
+    mon: OwnedMonster,
+    isPlayer: boolean,
+    slotIndex: number
+  ): CombatUnit => {
+    const spec = MONSTERS_BY_ID[mon.speciesId] || ALL_MONSTERS[0];
+    const st = computeMonsterStats(spec.id, mon.level);
+    const initialTu = Math.max(20, Math.round(120 - st.spd * 0.35));
+    const shieldVal = spec.element === 'earth' ? Math.round(st.hp * 0.15) : 0;
+
+    return {
+      uid: `${isPlayer ? 'P' : 'E'}_${mon.instanceId}_${slotIndex}_${Math.random().toString(36).slice(2, 5)}`,
+      instanceId: mon.instanceId,
+      speciesId: spec.id,
+      name: spec.name,
+      element: spec.element,
+      stage: spec.stage,
+      level: mon.level,
+      maxHp: st.hp,
+      hp: st.hp,
+      atk: st.atk,
+      def: st.def,
+      spd: st.spd,
+      tu: initialTu,
+      isPlayer,
+      slotIndex,
+      skills: spec.skills,
+      shield: shieldVal,
+      animState: 'idle',
+      animStartedAt: performance.now(),
+    };
+  };
+
+  // Start PvE Wild Expedition (Explicitly vs Wild AI)
+  const startPveExpedition = () => {
+    if (energy < 10) {
+      alert('Necesitas al menos 10 de Energía para iniciar una Expedición PvE.');
+      return;
     }
-  }, [units, selectedTargetUid]);
+    launchBattleEngine('pve', undefined, null, 'IA Salvaje (Expedición PvE)');
+  };
 
-  // Trigger AI turn automatically when activeActor is an enemy
+  // Start or Join Real Online PvP Room via /api/pvp-matchmaking
+  const handleEnterPvpRoom = async (room: PvpRoomTier) => {
+    if (room.mode === 'pvp_gold' && gold < room.stakeGold) {
+      alert(`Necesitas ${room.stakeGold} Oro para entrar en ${room.title}.`);
+      return;
+    }
+    if (room.mode === 'pvp_ton' && tonBalance < room.stakeTon) {
+      alert(`Necesitas ${room.stakeTon} TON en tu balance interno verificado para entrar en ${room.title}.`);
+      return;
+    }
+
+    setLoadingMatchmaking(true);
+    try {
+      const sortedSquad = [...playerRoster]
+        .sort((a, b) => (a.teamSlot || 99) - (b.teamSlot || 99))
+        .slice(0, 6);
+
+      const res = await fetch('/api/pvp-matchmaking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_or_join',
+          roomTier: room.id,
+          currency: room.mode === 'pvp_ton' ? 'TON' : 'GOLD',
+          stakeAmount: room.mode === 'pvp_ton' ? room.stakeTon : room.stakeGold,
+          telegramId,
+          username,
+          elo: 1000,
+          squad: sortedSquad,
+        }),
+      });
+      const data = await res.json();
+      await fetchOpenPvpRooms();
+
+      if (data.matched && data.match) {
+        // Matched with an existing open player room!
+        const oppSquad: OwnedMonster[] = Array.isArray(data.match.host_squad) && data.match.host_squad.length > 0
+          ? data.match.host_squad
+          : [];
+        launchBattleEngine(
+          room.mode,
+          room,
+          data.match.id,
+          `Domador Online: @${data.match.host_username} (Match #${String(data.match.id).slice(0, 6)})`,
+          oppSquad
+        );
+      } else if (data.match) {
+        // Room created in `pvp_matches` with status = 'open'
+        setSelectedRoom(room);
+        setWaitingRoom(data.match);
+      }
+    } catch (e) {
+      alert(`Error conectando al servidor de Matchmaking PvP: ${String(e)}`);
+    } finally {
+      setLoadingMatchmaking(false);
+    }
+  };
+
+  const handleCancelWaitingRoom = async () => {
+    if (!waitingRoom) return;
+    try {
+      await fetch('/api/pvp-matchmaking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cancel_room', matchId: waitingRoom.id }),
+      });
+      setWaitingRoom(null);
+      fetchOpenPvpRooms();
+    } catch {
+      setWaitingRoom(null);
+    }
+  };
+
+  const launchBattleEngine = (
+    mode: 'pve' | 'pvp_gold' | 'pvp_ton',
+    room?: PvpRoomTier,
+    matchId: string | null = null,
+    oppLabel: string = 'IA Salvaje',
+    customEnemyRoster?: OwnedMonster[]
+  ) => {
+    soundManager.playBgm(mode === 'pve' ? 'battle' : 'pvp');
+    setBattleMode(mode);
+    if (room) setSelectedRoom(room);
+    setActiveMatchId(matchId);
+    setOpponentLabel(oppLabel);
+    setCapturedThisMatch(null);
+    setUsedItems({});
+    setBattleOutcome(null);
+    setWaitingRoom(null);
+
+    const sorted = [...playerRoster].sort((a, b) => (a.teamSlot || 99) - (b.teamSlot || 99));
+    const frontRaw = sorted.slice(0, 4);
+    const benchRaw = sorted.slice(4, 8);
+
+    const pFront = frontRaw.map((m, idx) => buildCombatUnit(m, true, idx));
+    const pBench = benchRaw.map((m, idx) => buildCombatUnit(m, true, idx + 4));
+
+    const avgLv = Math.max(
+      3,
+      Math.round(frontRaw.reduce((acc, m) => acc + m.level, 0) / Math.max(1, frontRaw.length))
+    );
+
+    let eFront: CombatUnit[] = [];
+    let eBench: CombatUnit[] = [];
+
+    if (customEnemyRoster && customEnemyRoster.length > 0) {
+      eFront = customEnemyRoster.slice(0, 4).map((m, idx) => buildCombatUnit(m, false, idx));
+      eBench = customEnemyRoster.slice(4, 6).map((m, idx) => buildCombatUnit(m, false, idx + 4));
+    } else {
+      const stagePool =
+        mode === 'pve'
+          ? ALL_MONSTERS.filter((m) => m.stage <= 2)
+          : ALL_MONSTERS.filter((m) => m.stage >= (avgLv >= 10 ? 2 : 1));
+      const shuffled = [...stagePool].sort(() => Math.random() - 0.5);
+      eFront = shuffled.slice(0, 4).map((spec, idx) =>
+        buildCombatUnit(
+          {
+            instanceId: `enemy_${idx}`,
+            speciesId: spec.id,
+            level: mode === 'pve' ? Math.max(2, avgLv - 1) : avgLv + 1,
+            xp: 0,
+            teamSlot: idx + 1,
+          },
+          false,
+          idx
+        )
+      );
+      eBench = shuffled.slice(4, 6).map((spec, idx) =>
+        buildCombatUnit(
+          {
+            instanceId: `enemy_bench_${idx}`,
+            speciesId: spec.id,
+            level: avgLv,
+            xp: 0,
+            teamSlot: idx + 5,
+          },
+          false,
+          idx + 4
+        )
+      );
+    }
+
+    setPlayerFront(pFront);
+    setPlayerBench(pBench);
+    setEnemyFront(eFront);
+    setEnemyBench(eBench);
+    setSelectedTargetUid(eFront[0]?.uid || null);
+    setBattleLog([
+      mode === 'pve'
+        ? `🏕️ ¡Expedición PvE 4v4 iniciada contra ${oppLabel}! Captura monstruos salvajes debilitados con tus Orbes.`
+        : `⚔️ ¡Combate PvP (${room?.title}) iniciado contra ${oppLabel}! Pozo en Escrow bloqueado.`,
+    ]);
+    setInBattle(true);
+  };
+
+  // Determine active unit with lowest TU
+  const allActiveUnits = [...playerFront, ...enemyFront].filter((u) => u.hp > 0);
+  allActiveUnits.sort((a, b) => a.tu - b.tu || b.spd - a.spd);
+  const currentTurnUnit = allActiveUnits[0] || null;
+
+  // Execute Enemy Turn automatically
   useEffect(() => {
-    if (!activeRoom || winner || isBusy || !activeActor) return;
-    if (activeActor.side === 'enemy') {
-      setIsBusy(true);
+    if (!inBattle || battleOutcome || !currentTurnUnit) return;
+    if (!currentTurnUnit.isPlayer) {
       const timer = setTimeout(() => {
-        executeEnemyTurn(activeActor);
-      }, 650);
+        executeEnemyTurn(currentTurnUnit);
+      }, 750);
       return () => clearTimeout(timer);
     }
-  }, [activeActor?.uid, activeActor?.tu, winner, isBusy, activeRoom]);
+  }, [inBattle, battleOutcome, currentTurnUnit?.uid, currentTurnUnit?.tu]);
 
-  // Canvas 60FPS 2D Pixel Art Renderer
-  useEffect(() => {
-    if (!activeRoom) return;
-    let animId: number;
-    let tick = 0;
-
-    const render = () => {
-      tick++;
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.imageSmoothingEnabled = false;
-          const W = canvas.width;
-          const H = canvas.height;
-
-          // 1. Draw Arena Background
-          const bg = imagesCacheRef.current['/assets/scenes/battle_arena_bg.png'];
-          if (bg && bg.complete) {
-            ctx.drawImage(bg, 0, 0, W, H);
-          } else {
-            ctx.fillStyle = '#141829';
-            ctx.fillRect(0, 0, W, H);
-          }
-
-          // Dark vignette overlay for contrast
-          ctx.fillStyle = 'rgba(8, 10, 20, 0.28)';
-          ctx.fillRect(0, 0, W, H);
-
-          // 2. 4v4 Slot Coordinates on the Colosseum Floor
-          const playerCoords = [
-            { x: 155, y: 155 },
-            { x: 95, y: 205 },
-            { x: 175, y: 248 },
-            { x: 105, y: 295 },
-          ];
-          const enemyCoords = [
-            { x: W - 155, y: 155 },
-            { x: W - 95, y: 205 },
-            { x: W - 175, y: 248 },
-            { x: W - 105, y: 295 },
-          ];
-
-          const frameIdx = Math.floor(tick / 24) % 2; // 2-frame pixel breathing
-
-          // Sort units by Y so front units overlap cleanly
-          const currentUnits = [...unitsRef.current].sort((a, b) => a.slotIndex - b.slotIndex);
-
-          currentUnits.forEach((u) => {
-            const basePos =
-              u.side === 'player'
-                ? playerCoords[u.slotIndex % 4]
-                : enemyCoords[u.slotIndex % 4];
-            const ux = basePos.x + (u.side === 'player' ? u.lungeOffset : -u.lungeOffset);
-            const uy = basePos.y;
-
-            const isActor = activeActor?.uid === u.uid;
-            const isTarget = selectedTargetUid === u.uid && u.side === 'enemy';
-
-            // Ground Tactical Rune Ring
-            ctx.save();
-            ctx.beginPath();
-            ctx.ellipse(ux, uy + 34, 38, 13, 0, 0, Math.PI * 2);
-            if (isActor) {
-              ctx.fillStyle = 'rgba(250, 204, 21, 0.38)';
-              ctx.strokeStyle = '#facc15';
-              ctx.lineWidth = 3;
-            } else if (isTarget) {
-              ctx.fillStyle = 'rgba(239, 68, 68, 0.32)';
-              ctx.strokeStyle = '#ef4444';
-              ctx.lineWidth = 2.5;
-            } else {
-              ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
-              ctx.strokeStyle = ELEMENT_META[u.element].color;
-              ctx.lineWidth = 1.5;
-            }
-            ctx.fill();
-            ctx.stroke();
-            ctx.restore();
-
-            // Draw Monster 2D Pixel Art Sprite (flipped horizontally for player side so both face center!)
-            const animImg = imagesCacheRef.current[`/assets/monsters/${u.speciesId}_anim.png`];
-            const staticImg = imagesCacheRef.current[`/assets/monsters/${u.speciesId}.png`];
-            const spriteSize = 92;
-
-            ctx.save();
-            ctx.translate(ux, uy - 8);
-            if (u.side === 'player') {
-              ctx.scale(-1, 1);
-            }
-            if (u.hitFlash > 0) {
-              ctx.filter = 'brightness(2.5) contrast(1.5)';
-            }
-            if (animImg && animImg.complete && animImg.naturalWidth >= 384) {
-              ctx.drawImage(
-                animImg,
-                frameIdx * 192,
-                0,
-                192,
-                192,
-                -spriteSize / 2,
-                -spriteSize / 2,
-                spriteSize,
-                spriteSize
-              );
-            } else if (staticImg && staticImg.complete) {
-              ctx.drawImage(
-                staticImg,
-                -spriteSize / 2,
-                -spriteSize / 2,
-                spriteSize,
-                spriteSize
-              );
-            }
-            ctx.restore();
-
-            // Draw Overhead Pixel HUD (Name, Element Dot, HP Bar, Shield Bar, TU Badge)
-            const barW = 82;
-            const barH = 8;
-            const bx = ux - barW / 2;
-            const by = uy - 62;
-
-            // Name & Lv
-            ctx.font = 'bold 10px monospace';
-            ctx.fillStyle = '#090d16';
-            ctx.fillRect(bx - 2, by - 14, barW + 4, 26);
-            ctx.strokeStyle = isActor ? '#facc15' : ELEMENT_META[u.element].color;
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(bx - 2, by - 14, barW + 4, 26);
-
-            ctx.fillStyle = isActor ? '#fde047' : '#f8fafc';
-            ctx.textAlign = 'center';
-            ctx.fillText(`${u.name.slice(0, 9)} Nv.${u.level}`, ux, by - 4);
-
-            // HP Bar
-            const hpPct = Math.max(0, Math.min(1, u.hp / u.maxHp));
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(bx, by, barW, barH);
-            ctx.fillStyle =
-              hpPct > 0.5 ? '#22c55e' : hpPct > 0.25 ? '#f59e0b' : '#ef4444';
-            ctx.fillRect(bx, by, Math.round(barW * hpPct), barH);
-
-            // Shield Overlay
-            if (u.shield > 0) {
-              const shPct = Math.min(1, u.shield / u.maxHp);
-              ctx.fillStyle = '#38bdf8';
-              ctx.fillRect(bx, by + barH - 3, Math.round(barW * shPct), 3);
-            }
-
-            // Status / Buff tag
-            if (u.status !== 'none' || u.atkBuff) {
-              ctx.font = 'bold 9px monospace';
-              ctx.fillStyle =
-                u.status === 'burn'
-                  ? '#fb923c'
-                  : u.status === 'poison'
-                  ? '#c084fc'
-                  : u.status === 'stun'
-                  ? '#facc15'
-                  : '#38bdf8';
-              const label =
-                u.status !== 'none' ? u.status.toUpperCase() : 'ATK+';
-              ctx.fillText(label, ux, by + 20);
-            }
-          });
-
-          // 3. Projectile FX
-          if (projectileRef.current) {
-            const p = projectileRef.current;
-            p.progress += 0.14;
-            const cx = p.fromX + (p.toX - p.fromX) * p.progress;
-            const cy = p.fromY + (p.toY - p.fromY) * p.progress;
-
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(cx, cy, 12, 0, Math.PI * 2);
-            ctx.fillStyle = p.color;
-            ctx.fill();
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#ffffff';
-            ctx.stroke();
-            ctx.restore();
-
-            if (p.progress >= 1.0) {
-              projectileRef.current = null;
-            }
-          }
-
-          // 4. Floating Damage / Status Texts
-          floatingTextsRef.current.forEach((ft) => {
-            ctx.save();
-            ctx.font = 'bold 13px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#000000';
-            ctx.fillText(ft.text, ft.x + 1, ft.y + 1);
-            ctx.fillStyle = ft.color;
-            ctx.fillText(ft.text, ft.x, ft.y);
-            ctx.restore();
-            ft.y -= 0.85;
-            ft.alpha -= 0.022;
-          });
-          floatingTextsRef.current = floatingTextsRef.current.filter((f) => f.alpha > 0);
-        }
-      }
-      animId = requestAnimationFrame(render);
-    };
-
-    animId = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(animId);
-  }, [activeRoom, activeActor?.uid, selectedTargetUid]);
-
-  // Handle clicking on Canvas to select Enemy Target
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const cx = (e.clientX - rect.left) * scaleX;
-    const cy = (e.clientY - rect.top) * scaleY;
-
-    const W = canvas.width;
-    const enemyCoords = [
-      { x: W - 155, y: 155 },
-      { x: W - 95, y: 205 },
-      { x: W - 175, y: 248 },
-      { x: W - 105, y: 295 },
-    ];
-
-    units
-      .filter((u) => u.side === 'enemy')
-      .forEach((u) => {
-        const pos = enemyCoords[u.slotIndex % 4];
-        if (Math.hypot(cx - pos.x, cy - pos.y) < 52) {
-          setSelectedTargetUid(u.uid);
-        }
-      });
-  };
-
-  // Advance TU clock so the next readiness unit reaches 0 TU
-  const normalizeAndCheckOutcome = (
-    updatedUnits: BattleUnit[],
-    pBenchCurr: BattleUnit[],
-    eBenchCurr: BattleUnit[]
+  const advanceTimeUnits = (
+    pF: CombatUnit[],
+    eF: CombatUnit[],
+    actingUid: string,
+    tuAdded: number
   ) => {
-    let survivors = updatedUnits.filter((u) => u.hp > 0);
-    let nextPBench = [...pBenchCurr];
-    let nextEBench = [...eBenchCurr];
+    const allAlive = [...pF, ...eF].filter((u) => u.hp > 0);
+    if (allAlive.length === 0) return { nextPF: pF, nextEF: eF };
 
-    // Check if any frontline slot (0..3) opened up and bring in reinforcement from bench
-    const pSlotsUsed = new Set(
-      survivors.filter((u) => u.side === 'player').map((u) => u.slotIndex)
+    const updatedPF = pF.map((u) =>
+      u.uid === actingUid ? { ...u, tu: u.tu + tuAdded } : { ...u }
     );
-    for (let s = 0; s < 4; s++) {
-      if (!pSlotsUsed.has(s) && nextPBench.length > 0) {
-        const rein = { ...nextPBench[0], slotIndex: s, tu: 25 };
-        nextPBench = nextPBench.slice(1);
-        survivors.push(rein);
-      }
-    }
-
-    const eSlotsUsed = new Set(
-      survivors.filter((u) => u.side === 'enemy').map((u) => u.slotIndex)
+    const updatedEF = eF.map((u) =>
+      u.uid === actingUid ? { ...u, tu: u.tu + tuAdded } : { ...u }
     );
-    for (let s = 0; s < 4; s++) {
-      if (!eSlotsUsed.has(s) && nextEBench.length > 0) {
-        const rein = { ...nextEBench[0], slotIndex: s, tu: 25 };
-        nextEBench = nextEBench.slice(1);
-        survivors.push(rein);
+
+    const minTu = Math.min(
+      ...[...updatedPF, ...updatedEF].filter((u) => u.hp > 0).map((u) => u.tu)
+    );
+    if (minTu > 0 && isFinite(minTu)) {
+      updatedPF.forEach((u) => {
+        if (u.hp > 0) u.tu = Math.max(0, u.tu - minTu);
+      });
+      updatedEF.forEach((u) => {
+        if (u.hp > 0) u.tu = Math.max(0, u.tu - minTu);
+      });
+    }
+    return { nextPF: updatedPF, nextEF: updatedEF };
+  };
+
+  const checkAndHandleReplacements = (
+    pF: CombatUnit[],
+    pB: CombatUnit[],
+    eF: CombatUnit[],
+    eB: CombatUnit[]
+  ) => {
+    const nextPF = [...pF];
+    const nextPB = [...pB];
+    const nextEF = [...eF];
+    const nextEB = [...eB];
+
+    for (let i = 0; i < nextPF.length; i++) {
+      if (nextPF[i].hp <= 0 && nextPB.length > 0) {
+        const sub = nextPB.shift()!;
+        sub.slotIndex = nextPF[i].slotIndex;
+        sub.tu = 35;
+        sub.animState = 'evolve';
+        sub.animStartedAt = performance.now();
+        addLog(`🔄 ¡Refuerzo aliado! ${sub.name} entra desde la banca al Slot #${i + 1}.`);
+        nextPF[i] = sub;
       }
     }
 
-    const pAlive = survivors.filter((u) => u.side === 'player');
-    const eAlive = survivors.filter((u) => u.side === 'enemy');
+    for (let i = 0; i < nextEF.length; i++) {
+      if (nextEF[i].hp <= 0 && nextEB.length > 0) {
+        const sub = nextEB.shift()!;
+        sub.slotIndex = nextEF[i].slotIndex;
+        sub.tu = 40;
+        sub.animState = 'evolve';
+        sub.animStartedAt = performance.now();
+        addLog(`⚠️ ¡Refuerzo rival! ${sub.name} entra al campo enemigo.`);
+        nextEF[i] = sub;
+      }
+    }
 
-    if (eAlive.length === 0) {
-      setUnits(survivors);
-      handleBattleEnd('player');
+    const playerAlive = nextPF.some((u) => u.hp > 0);
+    const enemyAlive = nextEF.some((u) => u.hp > 0);
+
+    setPlayerFront(nextPF);
+    setPlayerBench(nextPB);
+    setEnemyFront(nextEF);
+    setEnemyBench(nextEB);
+
+    const aliveEnemies = nextEF.filter((u) => u.hp > 0);
+    if (aliveEnemies.length > 0 && !aliveEnemies.some((e) => e.uid === selectedTargetUid)) {
+      setSelectedTargetUid(aliveEnemies[0].uid);
+    }
+
+    if (!enemyAlive) {
+      finishBattle(true);
+    } else if (!playerAlive) {
+      finishBattle(false);
+    }
+  };
+
+  const executePlayerSkill = (skill: SkillSpec) => {
+    if (!currentTurnUnit || !currentTurnUnit.isPlayer || battleOutcome) return;
+
+    const pF = playerFront.map((u) => ({ ...u }));
+    const eF = enemyFront.map((u) => ({ ...u }));
+    const actor = pF.find((u) => u.uid === currentTurnUnit.uid);
+    if (!actor) return;
+
+    soundManager.playSfx(skill.is_ultimate ? 'ultimate' : 'attack');
+    const now = performance.now();
+    actor.animState = 'attack';
+    actor.animStartedAt = now;
+
+    if (skill.target === 'self_team') {
+      pF.forEach((ally) => {
+        if (ally.hp > 0) {
+          const heal = Math.round(ally.maxHp * 0.22);
+          ally.hp = Math.min(ally.maxHp, ally.hp + heal);
+          ally.atk = Math.round(ally.atk * 1.12);
+          ally.animState = 'evolve';
+          ally.animStartedAt = now;
+        }
+      });
+      spawnFx(210, 220, `+CURA & +ATK`, '#4ade80');
+      addLog(`✨ ${actor.name} usó ${skill.name} (+22% HP y +12% ATK al equipo). [+${skill.tu} TU]`);
+    } else if (skill.target === 'all_enemies') {
+      eF.forEach((foe, idx) => {
+        if (foe.hp <= 0) return;
+        const mult = getElementMultiplier(actor.element, foe.element);
+        const raw = ((actor.atk * skill.power) / Math.max(40, foe.def)) * mult;
+        const dmg = Math.max(18, Math.round(raw));
+        foe.hp = Math.max(0, foe.hp - dmg);
+        foe.animState = foe.hp <= 0 ? 'faint' : 'hit';
+        foe.animStartedAt = now;
+        spawnFx(590 + idx * 35, 160 + idx * 32, `-${dmg}${mult > 1 ? ' CRIT!' : ''}`, mult > 1 ? '#facc15' : '#f87171');
+      });
+      addLog(`💥 ¡ULTIMATE 4v4! ${actor.name} desató ${skill.name} contra todo el escuadrón rival! [+${skill.tu} TU]`);
+    } else {
+      const target =
+        eF.find((e) => e.uid === selectedTargetUid && e.hp > 0) ||
+        eF.find((e) => e.hp > 0);
+      if (!target) return;
+      const mult = getElementMultiplier(actor.element, target.element);
+      const raw = ((actor.atk * skill.power) / Math.max(40, target.def)) * mult;
+      const dmg = Math.max(22, Math.round(raw));
+      target.hp = Math.max(0, target.hp - dmg);
+      target.animState = target.hp <= 0 ? 'faint' : 'hit';
+      target.animStartedAt = now;
+      spawnFx(
+        590 + target.slotIndex * 35,
+        155 + target.slotIndex * 35,
+        `-${dmg}${mult > 1 ? ' SUPEREFICAZ!' : ''}`,
+        mult > 1 ? '#fde047' : '#fb7185'
+      );
+      addLog(
+        `⚔️ ${actor.name} atacó a ${target.name} con ${skill.name} (-${dmg} HP). [+${skill.tu} TU]`
+      );
+    }
+
+    const { nextPF, nextEF } = advanceTimeUnits(pF, eF, actor.uid, skill.tu);
+    checkAndHandleReplacements(nextPF, playerBench, nextEF, enemyBench);
+  };
+
+  const executeEnemyTurn = (enemyActor: CombatUnit) => {
+    const pF = playerFront.map((u) => ({ ...u }));
+    const eF = enemyFront.map((u) => ({ ...u }));
+    const actor = eF.find((u) => u.uid === enemyActor.uid && u.hp > 0);
+    if (!actor) return;
+
+    const alivePlayers = pF.filter((u) => u.hp > 0);
+    if (alivePlayers.length === 0) return;
+
+    const now = performance.now();
+    actor.animState = 'attack';
+    actor.animStartedAt = now;
+
+    const skill = actor.skills[Math.floor(Math.random() * 3)] || actor.skills[0];
+    const target = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
+
+    soundManager.playSfx('attack');
+    const mult = getElementMultiplier(actor.element, target.element);
+    const raw = ((actor.atk * skill.power) / Math.max(45, target.def)) * mult;
+    const dmg = Math.max(16, Math.round(raw * 0.9));
+    target.hp = Math.max(0, target.hp - dmg);
+    target.animState = target.hp <= 0 ? 'faint' : 'hit';
+    target.animStartedAt = now;
+
+    spawnFx(
+      170 + target.slotIndex * 32,
+      165 + target.slotIndex * 35,
+      `-${dmg}`,
+      '#f43f5e'
+    );
+    addLog(`👹 [Rival] ${actor.name} usó ${skill.name} sobre ${target.name} (-${dmg} HP). [+${skill.tu} TU]`);
+
+    const { nextPF, nextEF } = advanceTimeUnits(pF, eF, actor.uid, skill.tu);
+    checkAndHandleReplacements(nextPF, playerBench, nextEF, enemyBench);
+  };
+
+  const handleThrowCaptureOrb = (orbType: 'capture_basic' | 'capture_master') => {
+    if (battleMode !== 'pve') {
+      alert('La captura de monstruos solo está permitida en Expediciones PvE Salvajes.');
       return;
     }
-    if (pAlive.length === 0) {
-      setUnits(survivors);
-      handleBattleEnd('enemy');
+    const available = (inventory[orbType] || 0) + (usedItems[orbType] || 0);
+    if (available <= 0) {
+      alert('No te quedan Orbes de este tipo en la Mochila.');
       return;
     }
 
-    const minTu = Math.min(...survivors.map((u) => u.tu));
-    const normalized = survivors.map((u) => ({
-      ...u,
-      tu: Math.max(0, u.tu - minTu),
-      lungeOffset: 0,
-      hitFlash: 0,
-    }));
-
-    setPlayerBench(nextPBench);
-    setEnemyBench(nextEBench);
-    setUnits(normalized);
-    setIsBusy(false);
-  };
-
-  // Finish battle & distribute TON Wager Payout + 10% House Rake to Admin Supabase
-  const handleBattleEnd = async (winSide: 'player' | 'enemy') => {
-    setWinner(winSide);
-    setIsBusy(false);
-    if (!activeRoom) return;
-
-    if (winSide === 'player') {
-      soundManager.playSfx('evolve');
-      const elems: ElementType[] = ['fire', 'water', 'earth', 'storm', 'light', 'shadow'];
-      const randElem = elems[Math.floor(Math.random() * elems.length)];
-      const essenceKey = `essence_${randElem}`;
-
-      onUpdateProfile((prev) => ({
-        ...prev,
-        gold: prev.gold + activeRoom.rewardGold,
-        ton_balance: Number((prev.ton_balance + activeRoom.winnerTon).toFixed(4)),
-        trophies: prev.trophies + 28,
-        wins: prev.wins + 1,
-        campaign_stage: prev.campaign_stage + 1,
-        inventory: {
-          ...prev.inventory,
-          [essenceKey]: (prev.inventory[essenceKey] || 0) + 3,
-          xp_fruit: (prev.inventory.xp_fruit || 0) + 2,
-        },
-      }));
-
-      if (activeRoom.entryTon > 0) {
-        await recordHouseTreasuryEvent({
-          sourceEvent: `pvp_rake_10pct_${activeRoom.id}`,
-          playerTelegramId: profile.telegram_id,
-          playerUsername: profile.username,
-          grossAmount: activeRoom.potTon,
-          houseProfitTon: activeRoom.houseRakeTon,
-          houseProfitStars: 0,
-          currency: 'TON',
-          notes: `Victoria 4v4 en ${activeRoom.title}: Premio ${activeRoom.winnerTon} TON | Casa cobra ${activeRoom.houseRakeTon} TON (10% Rake)`,
-        });
-      }
-    } else {
-      onUpdateProfile((prev) => ({
-        ...prev,
-        gold: prev.gold + 100,
-        trophies: Math.max(800, prev.trophies - 15),
-        losses: prev.losses + 1,
-      }));
-
-      if (activeRoom.entryTon > 0) {
-        await recordHouseTreasuryEvent({
-          sourceEvent: `pvp_rake_10pct_${activeRoom.id}`,
-          playerTelegramId: profile.telegram_id,
-          playerUsername: profile.username,
-          grossAmount: activeRoom.potTon,
-          houseProfitTon: activeRoom.houseRakeTon,
-          houseProfitStars: 0,
-          currency: 'TON',
-          notes: `Partida 4v4 finalizada en ${activeRoom.title}: Casa cobra ${activeRoom.houseRakeTon} TON (10% Rake)`,
-        });
-      }
-    }
-
-    // Also record match in Game DB pvp_matches
-    try {
-      await gameSupabase.from('pvp_matches').insert({
-        room_type: activeRoom.id,
-        entry_fee_ton: activeRoom.entryTon,
-        house_rake_pct: 10.0,
-        prize_pool_ton: activeRoom.potTon,
-        house_fee_ton: activeRoom.houseRakeTon,
-        player1_name: profile.username,
-        player2_name: opponentName,
-        status: 'completed',
-        winner_name: winSide === 'player' ? profile.username : opponentName,
-      });
-    } catch {
-      // Ignore
-    }
-  };
-
-  // Execute Skill (Player or Enemy)
-  const executeSkill = (actor: BattleUnit, skill: MonsterSkill, explicitTargetUid?: string) => {
-    if (isBusy && actor.side === 'player') return;
-    setIsBusy(true);
-
-    if (skill.tu >= 145) {
-      soundManager.playSfx('ultimate');
-    } else {
-      soundManager.playSfx('attack');
-    }
-
-    const W = canvasRef.current?.width || 680;
-    const playerCoords = [
-      { x: 155, y: 155 },
-      { x: 95, y: 205 },
-      { x: 175, y: 248 },
-      { x: 105, y: 295 },
-    ];
-    const enemyCoords = [
-      { x: W - 155, y: 155 },
-      { x: W - 95, y: 205 },
-      { x: W - 175, y: 248 },
-      { x: W - 105, y: 295 },
-    ];
-
-    const getPos = (u: BattleUnit) =>
-      u.side === 'player' ? playerCoords[u.slotIndex % 4] : enemyCoords[u.slotIndex % 4];
-
-    const actorPos = getPos(actor);
-
-    // Burn / Poison tick at start of turn
-    let selfBurnDmg = 0;
-    if (actor.status === 'burn' || actor.status === 'poison') {
-      selfBurnDmg = Math.round(actor.maxHp * 0.07);
-    }
-
-    const nextUnits = units.map((u) => ({
-      ...u,
-      lungeOffset: u.uid === actor.uid ? 22 : 0,
-    }));
-
-    const actorRef = nextUnits.find((u) => u.uid === actor.uid)!;
-    actorRef.hp = Math.max(1, actorRef.hp - selfBurnDmg);
-    actorRef.tu += skill.tu;
-
-    let logMsg = `${actor.name} usó ${skill.name} (+${skill.tu} TU).`;
-
-    if (skill.type === 'heal' || skill.type === 'heal_all') {
-      const allies = nextUnits.filter((u) => u.side === actor.side && u.hp > 0);
-      const targets =
-        skill.type === 'heal_all'
-          ? allies
-          : [allies.sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0]];
-      targets.forEach((t) => {
-        if (!t) return;
-        const healAmt = Math.round((skill.power / 100) * actor.atk * 1.1);
-        t.hp = Math.min(t.maxHp, t.hp + healAmt);
-        const pos = getPos(t);
-        addFloatingText(pos.x, pos.y - 30, `+${healAmt} HP`, '#4ade80');
-      });
-      logMsg = `✨ ${actor.name} restauró vida con ${skill.name}!`;
-    } else if (skill.type === 'shield' || skill.type === 'shield_all') {
-      const allies = nextUnits.filter((u) => u.side === actor.side && u.hp > 0);
-      const targets = skill.type === 'shield_all' ? allies : [actorRef];
-      targets.forEach((t) => {
-        const shAmt = Math.round(t.maxHp * 0.25);
-        t.shield += shAmt;
-        const pos = getPos(t);
-        addFloatingText(pos.x, pos.y - 30, `+${shAmt} ESCUDO`, '#38bdf8');
-      });
-      logMsg = `🛡️ ${actor.name} desplegó ${skill.name}!`;
-    } else if (skill.type.startsWith('buff_')) {
-      const allies = nextUnits.filter((u) => u.side === actor.side && u.hp > 0);
-      const targets = skill.type === 'buff_team' ? allies : [actorRef];
-      targets.forEach((t) => {
-        t.atkBuff = true;
-        if (skill.type === 'buff_spd' || skill.type === 'buff_team') {
-          t.tu = Math.max(0, t.tu - 25);
-        }
-        const pos = getPos(t);
-        addFloatingText(pos.x, pos.y - 30, `ATK/SPD UP!`, '#facc15');
-      });
-      logMsg = `🔥 ${actor.name} potenció al escuadrón con ${skill.name}!`;
-    } else {
-      // Offensive attack (single, aoe2, aoe4)
-      const opponents = nextUnits.filter((u) => u.side !== actor.side && u.hp > 0);
-      let targets: BattleUnit[] = [];
-      const primary =
-        opponents.find((o) => o.uid === (explicitTargetUid || selectedTargetUid)) ||
-        opponents[0];
-
-      if (skill.type === 'single' && primary) {
-        targets = [primary];
-      } else if (skill.type === 'aoe2') {
-        targets = opponents.slice(0, 2);
-      } else {
-        targets = opponents;
-      }
-
-      if (primary) {
-        const tPos = getPos(primary);
-        projectileRef.current = {
-          fromX: actorPos.x,
-          fromY: actorPos.y,
-          toX: tPos.x,
-          toY: tPos.y,
-          progress: 0,
-          color: ELEMENT_META[actor.element].color,
-        };
-      }
-
-      targets.forEach((target) => {
-        const elemMult = getElementMultiplier(actor.element, target.element);
-        const buffMult = actor.atkBuff ? 1.35 : 1.0;
-        let bonusMult = 1.0;
-        if (skill.effect === 'burn_bonus' && target.status === 'burn') bonusMult = 1.8;
-        if (skill.effect === 'poison_bonus' && target.status === 'poison') bonusMult = 1.8;
-
-        const raw =
-          ((actor.atk * (skill.power / 100)) / Math.max(40, target.def * 0.55)) *
-          95 *
-          elemMult *
-          buffMult *
-          bonusMult;
-        let dmg = Math.max(28, Math.round(raw));
-
-        if (target.shield > 0) {
-          const absorbed = Math.min(target.shield, dmg);
-          target.shield -= absorbed;
-          dmg -= absorbed;
-        }
-        target.hp = Math.max(0, target.hp - dmg);
-        target.hitFlash = 1;
-
-        // Apply status effects
-        if (skill.effect === 'burn' && target.hp > 0) target.status = 'burn';
-        if (skill.effect === 'poison' && target.hp > 0) target.status = 'poison';
-        if (skill.effect === 'stun' && target.hp > 0) {
-          target.status = 'stun';
-          target.tu += 40;
-        }
-        if (skill.effect === 'slow' && target.hp > 0) {
-          target.tu += 30;
-        }
-
-        const tPos = getPos(target);
-        const tag = elemMult > 1.0 ? `-${dmg} CRÍT!` : `-${dmg}`;
-        addFloatingText(
-          tPos.x,
-          tPos.y - 25,
-          tag,
-          elemMult > 1.0 ? '#facc15' : '#f87171'
-        );
-      });
-
-      actorRef.atkBuff = false;
-    }
-
-    setUnits(nextUnits);
-    setBattleLog((prev) => [logMsg, ...prev.slice(0, 5)]);
-
-    setTimeout(() => {
-      normalizeAndCheckOutcome(nextUnits, playerBench, enemyBench);
-    }, 520);
-  };
-
-  // Enemy AI Turn
-  const executeEnemyTurn = (enemyActor: BattleUnit) => {
-    const pTargets = unitsRef.current.filter((u) => u.side === 'player' && u.hp > 0);
-    if (pTargets.length === 0) return;
-    const chosenTarget = pTargets[Math.floor(Math.random() * pTargets.length)];
-    const chosenSkill =
-      enemyActor.skills[Math.floor(Math.random() * enemyActor.skills.length)] ||
-      enemyActor.skills[0];
-    executeSkill(enemyActor, chosenSkill, chosenTarget.uid);
-  };
-
-  // Throw Capture Orb in Wild Expedition to add monster to 4v4 Team!
-  const handleThrowCaptureOrb = (orbType: 'capture_orb_basic' | 'capture_orb_master') => {
-    if (!activeRoom || activeRoom.id !== 'wild_expedition') return;
-    if ((profile.inventory[orbType] || 0) <= 0) {
-      alert('No te quedan Orbes de este tipo en tu Mochila. Forja más en la Ciudadela.');
-      return;
-    }
-    const target = units.find((u) => u.uid === selectedTargetUid && u.side === 'enemy' && u.hp > 0);
+    const target =
+      enemyFront.find((e) => e.uid === selectedTargetUid && e.hp > 0) ||
+      enemyFront.find((e) => e.hp > 0);
     if (!target) return;
 
-    soundManager.playSfx('capture');
-    onUpdateProfile((prev) => ({
-      ...prev,
-      inventory: {
-        ...prev.inventory,
-        [orbType]: Math.max(0, (prev.inventory[orbType] || 0) - 1),
-      },
-    }));
+    const nextUsed = { ...usedItems, [orbType]: (usedItems[orbType] || 0) - 1 };
+    setUsedItems(nextUsed);
 
     const hpRatio = target.hp / target.maxHp;
-    const chance = orbType === 'capture_orb_master' ? 1.0 : Math.min(0.95, 0.55 + (1 - hpRatio) * 0.45);
-    const success = Math.random() <= chance;
+    const chance = orbType === 'capture_master' ? 1.0 : Math.min(0.9, 0.35 + (1 - hpRatio) * 0.6);
 
-    const W = canvasRef.current?.width || 680;
-    const enemyCoords = [
-      { x: W - 155, y: 155 },
-      { x: W - 95, y: 205 },
-      { x: W - 175, y: 248 },
-      { x: W - 105, y: 295 },
-    ];
-    const tPos = enemyCoords[target.slotIndex % 4];
+    if (Math.random() <= chance) {
+      soundManager.playSfx('capture');
+      const captured: OwnedMonster = {
+        instanceId: `cap_${Date.now()}`,
+        speciesId: target.speciesId,
+        level: target.level,
+        xp: 0,
+        teamSlot: null,
+      };
+      setCapturedThisMatch(captured);
+      triggerUnitAnim(target.uid, 'evolve');
+      spawnFx(610, 180, '¡CAPTURADO!', '#38bdf8');
+      addLog(`🔮 ¡ÉXITO! Has capturado a ${target.name} (Nv.${target.level}) para tu Santuario!`);
 
-    if (success) {
-      addFloatingText(tPos.x, tPos.y - 30, '🌟 ¡CAPTURADO!', '#38bdf8');
-      onCaptureMonster(target.speciesId, target.level);
-      setBattleLog((prev) => [
-        `🎉 ¡Capturaste a ${target.name} (Nv.${target.level})! Se ha unido a tu equipo 4v4.`,
-        ...prev.slice(0, 5),
-      ]);
-      const updated = units.map((u) => (u.uid === target.uid ? { ...u, hp: 0 } : u));
-      setTimeout(() => {
-        normalizeAndCheckOutcome(updated, playerBench, enemyBench);
-      }, 450);
+      const eF = enemyFront.map((e) => (e.uid === target.uid ? { ...e, hp: 0, animState: 'faint' as AnimRowName } : e));
+      checkAndHandleReplacements(playerFront, playerBench, eF, enemyBench);
     } else {
-      addFloatingText(tPos.x, tPos.y - 30, '¡ESCAPÓ DEL ORBE!', '#fb923c');
-      setBattleLog((prev) => [
-        `⚠️ ${target.name} resistió el Orbe. ¡Debilítalo más para asegurar la captura!`,
-        ...prev.slice(0, 5),
-      ]);
+      soundManager.playSfx('attack');
+      spawnFx(610, 180, '¡ESCAPÓ DEL ORBE!', '#f97316');
+      addLog(`💨 ¡${target.name} rompió el Orbe! Debilita más su HP antes de lanzar.`);
     }
   };
 
-  // Lobby View if no battle active
-  if (!activeRoom) {
-    const frontlineMonsters = ownedMonsters
-      .filter((m) => m.teamSlot && m.teamSlot >= 1 && m.teamSlot <= 4)
-      .sort((a, b) => (a.teamSlot || 0) - (b.teamSlot || 0));
+  const finishBattle = async (won: boolean) => {
+    setBattleOutcome(won ? 'victory' : 'defeat');
+    soundManager.playSfx(won ? 'evolve' : 'attack');
 
+    let goldDelta = 0;
+    let tonDelta = 0;
+    const eloDelta = won ? 25 : -15;
+
+    if (battleMode === 'pve') {
+      goldDelta = won ? 380 : 60;
+    } else if (battleMode === 'pvp_gold') {
+      const stake = selectedRoom.stakeGold;
+      const netWin = Math.round(stake * 2 * (1 - selectedRoom.rakePct / 100)) - stake;
+      goldDelta = won ? netWin : -stake;
+    } else if (battleMode === 'pvp_ton') {
+      const stake = selectedRoom.stakeTon;
+      const netWin = Number((stake * 2 * (1 - selectedRoom.rakePct / 100) - stake).toFixed(4));
+      tonDelta = won ? netWin : -stake;
+    }
+
+    if (activeMatchId && battleMode !== 'pve') {
+      try {
+        await fetch('/api/pvp-matchmaking', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'settle_match',
+            matchId: activeMatchId,
+            winnerTelegramId: won ? telegramId : 0,
+            username,
+            combatLog: battleLog.slice(0, 10),
+          }),
+        });
+      } catch {
+        // Ignore offline settle error
+      }
+    }
+
+    onBattleComplete({
+      won,
+      mode: battleMode,
+      goldDelta,
+      tonDelta,
+      capturedMonster: capturedThisMatch || undefined,
+      itemDeltas: usedItems,
+      eloDelta,
+    });
+  };
+
+  // HTML5 Canvas 2D Pixel Art Battle Renderer (Consumes 6x4 Sprite Sheets in /assets/spritesheets/<id>_sheet.png!)
+  useEffect(() => {
+    if (!inBattle) return;
+    let animId: number;
+
+    const renderFrame = (now: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. Draw Background Arena
+      if (bgImgRef.current && bgImgRef.current.complete) {
+        ctx.drawImage(bgImgRef.current, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      const activeUid = currentTurnUnit?.uid;
+
+      const drawUnit = (u: CombatUnit, x: number, y: number, flipX: boolean) => {
+        // Determine which animation row (0..5) and column (0..3) to slice from the 512x768 Sprite Sheet
+        let rowName: AnimRowName = u.animState;
+        const cfg = ANIM_ROW_CONFIG[rowName] || ANIM_ROW_CONFIG.idle;
+        const elapsed = Math.max(0, now - u.animStartedAt);
+        let colIndex = Math.floor(elapsed / cfg.durationMs);
+
+        if (!cfg.loop && colIndex >= 4) {
+          if (u.hp <= 0) {
+            rowName = 'faint';
+            colIndex = 3; // Stay on final defeated spirit frame
+          } else {
+            rowName = u.uid === activeUid ? 'idle_alt' : 'idle';
+            const fallbackCfg = ANIM_ROW_CONFIG[rowName];
+            colIndex = Math.floor(now / fallbackCfg.durationMs) % 4;
+          }
+        } else {
+          if (u.hp > 0 && (rowName === 'idle' || rowName === 'idle_alt')) {
+            rowName = u.uid === activeUid ? 'idle_alt' : 'idle';
+          }
+          colIndex = colIndex % 4;
+        }
+
+        const activeCfg = ANIM_ROW_CONFIG[rowName];
+        const sx = colIndex * 128;
+        const sy = activeCfg.row * 128;
+
+        const isTurn = u.uid === activeUid && u.hp > 0;
+        const isTarget = !u.isPlayer && u.uid === selectedTargetUid && u.hp > 0;
+
+        // Tactical Pedestal Shadow
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(x, y + 36, 42, 14, 0, 0, Math.PI * 2);
+        ctx.fillStyle = isTurn
+          ? 'rgba(250, 204, 21, 0.55)'
+          : isTarget
+          ? 'rgba(244, 63, 94, 0.55)'
+          : 'rgba(2, 6, 23, 0.65)';
+        ctx.fill();
+        if (isTurn || isTarget) {
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = isTurn ? '#fde047' : '#fb7185';
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // Draw Monster Frame from 512x768 Sprite Sheet (Cell 128x128)
+        const sheetImg = spritesheetCacheRef.current[u.speciesId];
+        if (sheetImg && sheetImg.complete && sheetImg.naturalWidth >= 512) {
+          ctx.save();
+          ctx.translate(x, y - 8);
+          if (flipX) ctx.scale(-1, 1);
+          ctx.drawImage(sheetImg, sx, sy, 128, 128, -50, -50, 100, 100);
+          ctx.restore();
+        }
+
+        if (u.hp <= 0) return;
+
+        // HP Bar & TU Badge
+        const barW = 86;
+        const barH = 8;
+        const bx = x - barW / 2;
+        const by = y - 62;
+
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.92)';
+        ctx.fillRect(bx - 2, by - 16, barW + 4, 28);
+        ctx.strokeStyle = isTurn ? '#facc15' : '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(bx - 2, by - 16, barW + 4, 28);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText(`${u.name.slice(0, 9)} L${u.level}`, bx + 2, by - 5);
+
+        const hpPct = Math.max(0, Math.min(1, u.hp / u.maxHp));
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(bx, by, barW, barH);
+        ctx.fillStyle = hpPct > 0.5 ? '#22c55e' : hpPct > 0.25 ? '#eab308' : '#ef4444';
+        ctx.fillRect(bx, by, Math.round(barW * hpPct), barH);
+
+        // TU Badge
+        ctx.fillStyle = '#0ea5e9';
+        ctx.fillRect(bx + barW - 26, by - 15, 26, 12);
+        ctx.fillStyle = '#020617';
+        ctx.font = 'bold 9px monospace';
+        ctx.fillText(`${u.tu}TU`, bx + barW - 24, by - 6);
+      };
+
+      const pCoords = [
+        [135, 175],
+        [230, 225],
+        [150, 295],
+        [255, 340],
+      ];
+      const eCoords = [
+        [725, 175],
+        [630, 225],
+        [710, 295],
+        [605, 340],
+      ];
+
+      // Draw Player 4v4 Frontline (flipped right to face enemies)
+      playerFront.forEach((u, idx) => {
+        const [px, py] = pCoords[idx] || [160, 220];
+        drawUnit(u, px, py, true);
+      });
+
+      // Draw Enemy 4v4 Frontline
+      enemyFront.forEach((u, idx) => {
+        const [ex, ey] = eCoords[idx] || [680, 220];
+        drawUnit(u, ex, ey, false);
+      });
+
+      // Draw Floating Damage Numbers
+      setFloatingFx((prev) =>
+        prev.filter((fx) => {
+          const age = now - fx.createdAt;
+          if (age > 1100) return false;
+          ctx.save();
+          ctx.font = 'bold 15px monospace';
+          ctx.fillStyle = '#020617';
+          ctx.fillText(fx.text, fx.x + 2, fx.y - age * 0.03 + 2);
+          ctx.fillStyle = fx.color;
+          ctx.fillText(fx.text, fx.x, fx.y - age * 0.03);
+          ctx.restore();
+          return true;
+        })
+      );
+
+      animId = requestAnimationFrame(renderFrame);
+    };
+
+    animId = requestAnimationFrame(renderFrame);
+    return () => cancelAnimationFrame(animId);
+  }, [inBattle, playerFront, enemyFront, currentTurnUnit?.uid, selectedTargetUid]);
+
+  if (!inBattle) {
     return (
       <div className="space-y-4">
-        {/* Current 4v4 Lineup Banner */}
-        <div className="pixel-panel rounded-xl p-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-            <div>
-              <h2 className="font-pixel-title text-xs sm:text-sm text-amber-400 flex items-center gap-2">
-                <Swords className="w-4 h-4" /> ESCUADRÓN TITULAR 4v4 EN CAMPO
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Empiezas con tu inicial elegido y puedes añadir hasta 4 titulares + 4 refuerzos capturando o invocando.
-              </p>
-            </div>
-            <span className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-xs font-bold text-emerald-400">
-              {frontlineMonsters.length} / 4 Titulares Listos
-            </span>
-          </div>
-
-          <div className="grid grid-cols-4 gap-2">
-            {[1, 2, 3, 4].map((slot) => {
-              const mon = frontlineMonsters.find((m) => m.teamSlot === slot);
-              const sp = mon ? SPECIES_BY_ID[mon.speciesId] : null;
-              const elem = sp ? ELEMENT_META[sp.element] : null;
-              return (
-                <div
-                  key={slot}
-                  className={`rounded-lg p-2 border-2 flex flex-col items-center justify-center min-h-[104px] ${
-                    sp
-                      ? `${elem?.bgClass} ${elem?.borderClass}`
-                      : 'bg-slate-900/60 border-dashed border-slate-700'
-                  }`}
-                >
-                  {sp && mon ? (
-                    <>
-                      <img
-                        src={`/assets/monsters/${sp.id}.png`}
-                        alt={sp.name}
-                        className="w-14 h-14 pixelated object-contain"
-                      />
-                      <span className="text-[11px] font-bold text-white truncate max-w-full">
-                        {sp.name}
-                      </span>
-                      <span className="text-[10px] text-amber-300">Nv.{mon.level} • {sp.cost_tu} TU</span>
-                    </>
-                  ) : (
-                    <div className="text-center text-[10px] text-slate-500">
-                      <div className="font-bold text-slate-400">SLOT #{slot}</div>
-                      <div>Vacío (Captura en PvE)</div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Rooms Selection */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {WAGER_ROOMS.map((room) => (
-            <div
-              key={room.id}
-              className="pixel-panel rounded-xl p-4 flex flex-col justify-between border-l-4 border-l-amber-400"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                    {room.badge}
-                  </span>
-                  {room.entryTon > 0 && (
-                    <span className="text-xs font-bold text-sky-400 flex items-center gap-1">
-                      <img src="/assets/icons/icon_ton.png" className="w-4 h-4 pixelated" alt="" />
-                      Entrada: {room.entryTon} TON
-                    </span>
-                  )}
-                </div>
-                <h3 className="font-bold text-base text-white mt-1">{room.title}</h3>
-                <p className="text-xs text-slate-300 mt-1">{room.subtitle}</p>
+        {/* Live PvP Matchmaking Queue Modal (When hosting an open room in `pvp_matches`) */}
+        {waitingRoom && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="pixel-panel max-w-md w-full p-5 border-2 border-amber-400 text-center space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-amber-500/20 border border-amber-400 text-amber-300 font-pixel text-[10px]">
+                📡 SALA PvP ABIERTA EN SUPABASE (`pvp_matches`)
               </div>
-
-              <div className="mt-4 flex items-center justify-between pt-3 border-t border-slate-800">
-                <div className="text-xs text-slate-400 flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-amber-300 font-semibold">
-                    <img src="/assets/icons/icon_gold.png" className="w-4 h-4 pixelated" alt="" />
-                    +{room.rewardGold} Oro
-                  </span>
-                  {room.winnerTon > 0 && (
-                    <span className="text-emerald-400 font-bold">
-                      • Bote Neto: {room.winnerTon} TON
-                    </span>
-                  )}
+              <h3 className="font-pixel text-sm text-white">{selectedRoom.title}</h3>
+              <p className="text-xs text-slate-300">
+                Tu sala (<span className="text-amber-300 font-mono">#{String(waitingRoom.id).slice(0, 8)}</span>) está publicada en tiempo real en <span className="text-emerald-400">velmora-game-prod</span>. Otro domador puede unirse desde su cliente, o puedes retar al Escuadrón Sombra clasificado del ranking ahora mismo.
+              </p>
+              <div className="bg-slate-950 border border-slate-800 rounded p-2.5 text-left text-xs space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Anfitrión:</span>
+                  <span className="text-white font-bold">@{username}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Apuesta en Escrow:</span>
+                  <span className="text-amber-300 font-bold">
+                    {selectedRoom.mode === 'pvp_ton' ? `${selectedRoom.stakeTon} TON` : `${selectedRoom.stakeGold} Oro`}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Comisión Casa (Rake):</span>
+                  <span className="text-emerald-400 font-bold">{selectedRoom.rakePct}%</span>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 pt-2">
                 <button
-                  onClick={() => startBattle(room)}
-                  className={`pixel-btn px-4 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r ${room.color}`}
+                  onClick={() =>
+                    launchBattleEngine(
+                      selectedRoom.mode,
+                      selectedRoom,
+                      waitingRoom.id,
+                      `Escuadrón Clasificado Ranking (#${String(waitingRoom.id).slice(0, 6)})`
+                    )
+                  }
+                  className="pixel-btn pixel-btn-gold w-full py-2.5 text-[10px]"
                 >
-                  ⚔️ ENTRAR 4v4
+                  ⚔️ COMBATIR CONTRA ESCUADRÓN CLASIFICADO DEL RANKING
+                </button>
+                <button
+                  onClick={handleCancelWaitingRoom}
+                  className="pixel-btn pixel-btn-red w-full py-2 text-[10px]"
+                >
+                  ✕ CANCELAR SALA ABIERTA (SIN COSTE)
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Lobby Header Banner */}
+        <div className="relative rounded-lg overflow-hidden border-2 border-amber-500/70 shadow-xl">
+          <img
+            src="/assets/scenes/battle_arena_bg.png"
+            alt="Battle Arena"
+            className="w-full h-40 sm:h-48 object-cover pixel-art"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/55 to-slate-950/90 p-4 flex flex-col justify-between">
+            <div>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-amber-500/20 border border-amber-400/50 text-amber-300 text-[10px] font-pixel mb-2">
+                ⚡ MOTOR TÁCTICO 4v4 TIME UNITS + SPRITE SHEETS 6×4 REALES
+              </div>
+              <h2 className="font-pixel text-base sm:text-lg text-white">
+                COLISEO DE BATALLA 4v4: PvE SALVAJE & PvP ONLINE
+              </h2>
+              <p className="text-xs text-slate-300 max-w-2xl mt-1">
+                Separación transparente: Explora el modo <strong>PvE Salvaje (contra IA)</strong> para capturar monstruos con tus Orbes, o entra a las <strong>Salas PvP Online sincronizadas en Supabase (`pvp_matches`)</strong> con pozo de apuestas y 10% de rake para la casa.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 mt-3">
+              <button
+                onClick={startPveExpedition}
+                className="pixel-btn pixel-btn-green px-5 py-2.5 flex items-center gap-2 text-xs"
+              >
+                <img src="/assets/icons/icon_capture_basic.png" alt="Orb" className="w-5 h-5 pixel-art" />
+                🏕️ EXPEDICIÓN PvE CONTRA IA SALVAJE (-10 ENERGÍA • CAPTURA ACTIVA)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Real Online PvP Wager Rooms */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {PVP_ROOMS.map((room) => (
+            <div
+              key={room.id}
+              className="pixel-panel p-4 flex flex-col justify-between border-2 border-slate-700 hover:border-amber-400 transition"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/50 text-amber-300 font-pixel text-[9px]">
+                    {room.badge}
+                  </span>
+                  <span className="text-xs font-bold text-emerald-400">
+                    Rake Casa: {room.rakePct}%
+                  </span>
+                </div>
+                <h3 className="font-pixel text-sm text-white mb-1">{room.title}</h3>
+                <p className="text-xs text-slate-300 mb-3">{room.prizeDesc}</p>
+
+                <div className="bg-slate-900/90 border border-slate-800 rounded p-2.5 mb-4 flex items-center justify-between">
+                  <span className="text-xs text-slate-400">Entrada en Escrow:</span>
+                  <div className="flex items-center gap-1.5 font-pixel text-xs text-amber-300">
+                    <img
+                      src={
+                        room.mode === 'pvp_ton'
+                          ? '/assets/icons/icon_ton.png'
+                          : '/assets/icons/icon_gold.png'
+                      }
+                      alt="Currency"
+                      className="w-5 h-5 pixel-art"
+                    />
+                    {room.mode === 'pvp_ton' ? `${room.stakeTon} TON` : `${room.stakeGold} ORO`}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleEnterPvpRoom(room)}
+                disabled={loadingMatchmaking}
+                className={`pixel-btn w-full py-2.5 text-[10px] flex items-center justify-center gap-2 ${
+                  room.mode === 'pvp_ton' ? 'pixel-btn-blue' : 'pixel-btn-gold'
+                }`}
+              >
+                <img src="/assets/icons/icon_sword_pvp.png" alt="PvP" className="w-4 h-4 pixel-art" />
+                {loadingMatchmaking ? 'CONECTANDO...' : 'BUSCAR / CREAR SALA PvP ONLINE'}
+              </button>
+            </div>
           ))}
+        </div>
+
+        {/* Live Supabase `pvp_matches` Feed */}
+        <div className="pixel-panel p-3.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-pixel text-[10px] text-sky-300">
+              🌐 REGISTRO EN VIVO DE SALAS PvP ONLINE (`pvp_matches` EN SUPABASE)
+            </span>
+            <button
+              onClick={fetchOpenPvpRooms}
+              className="text-[10px] font-pixel text-amber-300 underline"
+            >
+              🔄 ACTUALIZAR SALAS
+            </button>
+          </div>
+          {openMatches.length === 0 ? (
+            <div className="text-xs text-slate-400 py-2">
+              No hay salas abiertas esperando retador en este segundo. ¡Crea una sala arriba para publicar tu escuadrón 4v4!
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {openMatches.slice(0, 6).map((m) => (
+                <div
+                  key={m.id}
+                  className="bg-slate-900/90 border border-slate-800 rounded p-2 text-xs flex items-center justify-between"
+                >
+                  <div>
+                    <div className="font-bold text-white">
+                      @{m.host_username || 'Commander'} • <span className="text-amber-300">{m.stake_amount} {m.currency}</span>
+                    </div>
+                    <div className="text-[10px] text-slate-400">
+                      Sala: {m.room_tier} • Rake: {m.rake_pct}%
+                    </div>
+                  </div>
+                  <span
+                    className={`px-2 py-0.5 rounded font-pixel text-[8px] ${
+                      m.status === 'open'
+                        ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40'
+                        : 'bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    {String(m.status).toUpperCase()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
   }
 
-  // Active 4v4 Battle View
-  const sortedTimeline = [...units].sort((a, b) => a.tu - b.tu || b.spd - a.spd);
-
+  // ACTIVE 4v4 BATTLE VIEW
   return (
     <div className="space-y-3">
-      {/* Top Bar: Match Info & Neo Monsters TU Timeline Queue */}
-      <div className="pixel-panel rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+      {/* Top Turn Queue Bar (Time Units) */}
+      <div className="pixel-panel p-2.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 overflow-x-auto py-1">
-          <span className="text-[10px] font-pixel-title text-amber-400 uppercase shrink-0">
-            COLA TU:
+          <span className="font-pixel text-[10px] text-amber-300 shrink-0 mr-1">
+            ⏱️ COLA DE TURNOS (TU):
           </span>
-          {sortedTimeline.map((u, idx) => (
+          {allActiveUnits.map((u, idx) => (
             <div
               key={u.uid}
-              onClick={() => u.side === 'enemy' && setSelectedTargetUid(u.uid)}
-              className={`flex items-center gap-1.5 px-2 py-1 rounded border text-xs cursor-pointer shrink-0 ${
+              onClick={() => !u.isPlayer && setSelectedTargetUid(u.uid)}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer shrink-0 ${
                 idx === 0
-                  ? 'bg-amber-500/25 border-amber-400 text-amber-200 font-bold scale-105'
-                  : u.side === 'player'
-                  ? 'bg-emerald-950/60 border-emerald-700/60 text-emerald-200'
-                  : 'bg-rose-950/60 border-rose-700/60 text-rose-200'
+                  ? 'bg-amber-500/25 border-amber-400 ring-2 ring-amber-300'
+                  : u.isPlayer
+                  ? 'bg-emerald-950/50 border-emerald-500/50'
+                  : 'bg-rose-950/50 border-rose-500/50'
               }`}
             >
               <img
                 src={`/assets/monsters/${u.speciesId}.png`}
-                className="w-6 h-6 pixelated"
-                alt=""
+                alt={u.name}
+                className="w-7 h-7 pixel-art"
               />
-              <span>{u.tu} TU</span>
+              <div>
+                <div className="text-[10px] font-bold text-white leading-none">{u.name}</div>
+                <div className="text-[9px] text-sky-300 font-mono">{u.tu} TU</div>
+              </div>
             </div>
           ))}
         </div>
 
-        <button
-          onClick={() => setActiveRoom(null)}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-600"
-        >
-          Salir al Lobby
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-amber-300">
+            {battleMode === 'pve'
+              ? `🏕️ PvE vs ${opponentLabel}`
+              : `🏆 PvP: ${selectedRoom.title} vs ${opponentLabel}`}
+          </span>
+          <button
+            onClick={() => finishBattle(false)}
+            className="pixel-btn pixel-btn-red px-2.5 py-1 text-[9px]"
+          >
+            RENDIRSE
+          </button>
+        </div>
       </div>
 
-      {/* 2D Pixel Art Battle Canvas */}
-      <div className="relative pixel-panel rounded-xl overflow-hidden border-2 border-amber-500/50">
+      {/* 2D Pixel Art Battle Canvas (860x410) */}
+      <div className="relative pixel-panel overflow-hidden border-2 border-amber-500/70">
         <canvas
           ref={canvasRef}
-          width={680}
-          height={350}
-          onClick={handleCanvasClick}
-          className="w-full h-[250px] sm:h-[330px] object-cover pixelated cursor-crosshair block"
+          width={860}
+          height={410}
+          className="w-full h-[290px] sm:h-[390px] block pixel-art bg-slate-950"
         />
 
-        {/* Overlay Header inside Arena */}
-        <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
-          <div className="bg-slate-950/85 border border-emerald-500/50 px-2.5 py-1 rounded text-xs">
-            <span className="text-emerald-400 font-bold">TÚ: {profile.first_name}</span>
-            <span className="text-slate-400 ml-2">
-              ({units.filter((u) => u.side === 'player').length} en campo)
-            </span>
-          </div>
-          {activeRoom.potTon > 0 && (
-            <div className="bg-amber-950/90 border border-amber-400 px-3 py-1 rounded-full text-xs font-bold text-amber-300">
-              💎 BOTE: {activeRoom.potTon.toFixed(2)} TON
-            </div>
-          )}
-          <div className="bg-slate-950/85 border border-rose-500/50 px-2.5 py-1 rounded text-xs">
-            <span className="text-rose-400 font-bold">{opponentName}</span>
-          </div>
+        {/* Bench Reserves Indicator Overlay */}
+        <div className="absolute top-2 left-2 bg-slate-950/85 border border-emerald-500/50 px-2.5 py-1 rounded text-[10px] text-emerald-300 font-pixel">
+          🛡️ TU BANCA: {playerBench.filter((b) => b.hp > 0).length} REFUERZOS
+        </div>
+        <div className="absolute top-2 right-2 bg-slate-950/85 border border-rose-500/50 px-2.5 py-1 rounded text-[10px] text-rose-300 font-pixel">
+          ⚔️ BANCA RIVAL: {enemyBench.filter((b) => b.hp > 0).length} REFUERZOS
+        </div>
+
+        {/* Target Selector Pills for Enemy Frontline */}
+        <div className="absolute bottom-2 right-2 flex flex-wrap gap-1.5 bg-slate-950/90 p-1.5 rounded border border-slate-700">
+          <span className="text-[9px] font-pixel text-rose-300 self-center px-1">OBJETIVO:</span>
+          {enemyFront
+            .filter((e) => e.hp > 0)
+            .map((e) => (
+              <button
+                key={e.uid}
+                onClick={() => setSelectedTargetUid(e.uid)}
+                className={`px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1 border ${
+                  selectedTargetUid === e.uid
+                    ? 'bg-rose-600 text-white border-amber-300'
+                    : 'bg-slate-800 text-slate-300 border-slate-600'
+                }`}
+              >
+                <img
+                  src={ELEMENT_META[e.element].icon}
+                  alt={e.element}
+                  className="w-3.5 h-3.5 pixel-art"
+                />
+                {e.name} ({Math.round((e.hp / e.maxHp) * 100)}%)
+              </button>
+            ))}
         </div>
 
         {/* Victory / Defeat Modal Overlay */}
-        {winner && (
+        {battleOutcome && (
           <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center z-20">
-            <Trophy
-              className={`w-14 h-14 mb-2 ${
-                winner === 'player' ? 'text-amber-400 animate-bounce' : 'text-rose-500'
-              }`}
-            />
-            <h3 className="font-pixel-title text-lg sm:text-xl text-white mb-1">
-              {winner === 'player' ? '¡VICTORIA TÁCTICA 4v4!' : 'DERROTA EN LA ARENA'}
-            </h3>
-            <p className="text-sm text-slate-300 max-w-md mb-4">
-              {winner === 'player'
-                ? activeRoom.winnerTon > 0
-                  ? `¡Has ganado +${activeRoom.winnerTon.toFixed(2)} TON, +${activeRoom.rewardGold} Oro y +3 Esencias Elementales! (Comisión 10% enviada a Tesorería)`
-                  : `¡Has ganado +${activeRoom.rewardGold} Oro, +3 Esencias Elementales y +2 Frutas XP!`
-                : 'Entrena y evoluciona a tus monstruos en el Santuario para dominar el Coliseo.'}
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => startBattle(activeRoom)}
-                className="pixel-btn px-4 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5"
-              >
-                <RefreshCw className="w-4 h-4" /> Jugar Revancha
-              </button>
-              <button
-                onClick={() => setActiveRoom(null)}
-                className="pixel-btn px-4 py-2.5 rounded-lg bg-slate-800 text-white font-bold text-xs"
-              >
-                Volver al Lobby
-              </button>
+            <div className="font-pixel text-xl sm:text-2xl mb-2 text-amber-300">
+              {battleOutcome === 'victory' ? '🏆 ¡VICTORIA TÁCTICA 4v4!' : '💀 DERROTA EN LA ARENA'}
             </div>
+            <p className="text-sm text-slate-300 max-w-md mb-4">
+              {battleOutcome === 'victory'
+                ? battleMode === 'pve'
+                  ? 'Has dominado la expedición salvaje PvE y recolectado +380 Oro y Esencias.'
+                  : `¡Has ganado el pozo de ${selectedRoom.title} tras descontar el ${selectedRoom.rakePct}% de comisión de la casa!`
+                : 'Tu escuadrón cayó en combate. Entrena o evoluciona tus monstruos en el Santuario.'}
+            </p>
+            {capturedThisMatch && (
+              <div className="mb-4 p-3 rounded bg-sky-950/80 border-2 border-sky-400 flex items-center gap-3">
+                <img
+                  src={`/assets/monsters/${capturedThisMatch.speciesId}.png`}
+                  alt="Captured"
+                  className="w-14 h-14 pixel-art"
+                />
+                <div className="text-left">
+                  <div className="font-pixel text-xs text-sky-300">¡NUEVO MONSTRUO CAPTURADO!</div>
+                  <div className="text-sm font-bold text-white">
+                    {MONSTERS_BY_ID[capturedThisMatch.speciesId]?.name} (Nv.{capturedThisMatch.level})
+                  </div>
+                </div>
+              </div>
+            )}
+            <button
+              onClick={() => {
+                setInBattle(false);
+                soundManager.playBgm('citadel');
+                fetchOpenPvpRooms();
+              }}
+              className="pixel-btn pixel-btn-gold px-6 py-3 text-xs"
+            >
+              VOLVER AL CENTRO DE MANDO
+            </button>
           </div>
         )}
       </div>
 
-      {/* Tactical Command Deck (4 Skills with TU cost + Capture Orbs in Wild Mode) */}
-      {activeActor && !winner && (
-        <div className="pixel-panel rounded-xl p-3 space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
-            <div className="flex items-center gap-2.5">
-              <img
-                src={`/assets/monsters/${activeActor.speciesId}.png`}
-                className="w-11 h-11 pixelated bg-slate-900 rounded-lg border border-amber-500/50 p-0.5"
-                alt=""
-              />
-              <div>
+      {/* Bottom Tactical Command Deck (4 Skills + Capture Orbs + Combat Log) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+        {/* 4 Skills of Current Active Player Unit */}
+        <div className="lg:col-span-8 pixel-panel p-3">
+          {currentTurnUnit && currentTurnUnit.isPlayer ? (
+            <>
+              <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-white">{activeActor.name}</span>
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                    {activeActor.side === 'player' ? 'TU TURNO (0 TU)' : 'TURNO RIVAL...'}
-                  </span>
+                  <img
+                    src={`/assets/monsters/${currentTurnUnit.speciesId}.png`}
+                    alt={currentTurnUnit.name}
+                    className="w-9 h-9 pixel-art bg-slate-900 rounded border border-amber-400"
+                  />
+                  <div>
+                    <div className="font-pixel text-xs text-amber-300">
+                      TURNO ACTIVO: {currentTurnUnit.name} (Nv.{currentTurnUnit.level})
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      Selecciona una habilidad (cada habilidad suma Time Units y anima el Sprite Sheet 6×4):
+                    </div>
+                  </div>
                 </div>
-                <p className="text-xs text-slate-400">
-                  Pasiva: <span className="text-slate-200">{activeActor.passiveName}</span> • Toca un enemigo en la arena para fijar blanco
-                </p>
+
+                {/* Capture Orb Buttons (PvE Only) */}
+                {battleMode === 'pve' && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleThrowCaptureOrb('capture_basic')}
+                      className="pixel-btn pixel-btn-blue px-2.5 py-1.5 text-[9px] flex items-center gap-1"
+                    >
+                      <img
+                        src="/assets/icons/icon_capture_basic.png"
+                        alt="Orb"
+                        className="w-4 h-4 pixel-art"
+                      />
+                      ORBE ({Math.max(0, (inventory.capture_basic || 0) + (usedItems.capture_basic || 0))})
+                    </button>
+                    <button
+                      onClick={() => handleThrowCaptureOrb('capture_master')}
+                      className="pixel-btn pixel-btn-gold px-2.5 py-1.5 text-[9px] flex items-center gap-1"
+                    >
+                      <img
+                        src="/assets/icons/icon_capture_master.png"
+                        alt="Master"
+                        className="w-4 h-4 pixel-art"
+                      />
+                      MAESTRO ({Math.max(0, (inventory.capture_master || 0) + (usedItems.capture_master || 0))})
+                    </button>
+                  </div>
+                )}
               </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {currentTurnUnit.skills.map((sk, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => executePlayerSkill(sk)}
+                    className={`p-2.5 rounded border-2 text-left transition flex flex-col justify-between ${
+                      sk.is_ultimate
+                        ? 'bg-gradient-to-br from-amber-950/90 to-rose-950/90 border-amber-400 hover:border-yellow-300'
+                        : 'bg-slate-900/90 border-slate-700 hover:border-sky-400'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="font-pixel text-[10px] text-white truncate">
+                          {sk.is_ultimate ? '💥 ' : '⚔️ '}
+                          {sk.name}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-tight">{sk.desc}</p>
+                    </div>
+                    <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-800 text-[10px] font-mono">
+                      <span className="text-amber-300">PWR {sk.power || 'BUFF'}</span>
+                      <span className="px-1.5 py-0.5 rounded bg-sky-950 text-sky-300 font-bold">
+                        +{sk.tu} TU
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="h-28 flex items-center justify-center font-pixel text-xs text-rose-400 animate-pulse">
+              ⏳ EJECUTANDO TURNO DEL ESCUADRÓN RIVAL...
             </div>
+          )}
+        </div>
 
-            {/* Capture Orb Buttons in Wild Expedition */}
-            {activeRoom.id === 'wild_expedition' && activeActor.side === 'player' && (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleThrowCaptureOrb('capture_orb_basic')}
-                  className="pixel-btn px-2.5 py-1.5 rounded-lg bg-sky-900/90 hover:bg-sky-800 border border-sky-400 text-xs font-bold text-sky-100 flex items-center gap-1.5"
-                >
-                  <img
-                    src="/assets/icons/icon_capture_basic.png"
-                    className="w-5 h-5 pixelated"
-                    alt=""
-                  />
-                  Capturar ({profile.inventory.capture_orb_basic || 0})
-                </button>
-                <button
-                  onClick={() => handleThrowCaptureOrb('capture_orb_master')}
-                  className="pixel-btn px-2.5 py-1.5 rounded-lg bg-purple-900/90 hover:bg-purple-800 border border-purple-400 text-xs font-bold text-purple-100 flex items-center gap-1.5"
-                >
-                  <img
-                    src="/assets/icons/icon_capture_master.png"
-                    className="w-5 h-5 pixelated"
-                    alt=""
-                  />
-                  Orbe Maestro ({profile.inventory.capture_orb_master || 0})
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* 4 Skills Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {activeActor.skills.map((sk, idx) => (
-              <button
-                key={sk.id}
-                disabled={activeActor.side !== 'player' || isBusy}
-                onClick={() => executeSkill(activeActor, sk)}
-                className={`pixel-btn p-2.5 rounded-lg text-left transition ${
-                  idx === 3
-                    ? 'bg-gradient-to-br from-amber-700/80 to-red-900/90 border-amber-400'
-                    : 'bg-slate-900 hover:bg-slate-800 border-slate-600'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-1 mb-1">
-                  <span className="font-bold text-xs text-white truncate">{sk.name}</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-950 text-[10px] font-mono text-amber-300 shrink-0">
-                    +{sk.tu} TU
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-300 line-clamp-2">{sk.desc}</p>
-              </button>
-            ))}
-          </div>
-
-          {/* Combat Log */}
-          <div className="bg-slate-950/90 rounded-lg p-2 border border-slate-800 text-xs space-y-1 max-h-20 overflow-y-auto font-mono">
-            {battleLog.map((line, i) => (
-              <div key={i} className={i === 0 ? 'text-amber-300 font-bold' : 'text-slate-400'}>
-                {line}
+        {/* Battle Combat Log */}
+        <div className="lg:col-span-4 pixel-panel p-3 flex flex-col">
+          <div className="font-pixel text-[10px] text-sky-300 mb-1.5">📜 REGISTRO TÁCTICO 4v4</div>
+          <div className="flex-1 max-h-32 overflow-y-auto space-y-1 text-[11px] font-mono text-slate-300 pr-1">
+            {battleLog.map((entry, i) => (
+              <div key={i} className="border-b border-slate-800/80 pb-1">
+                {entry}
               </div>
             ))}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

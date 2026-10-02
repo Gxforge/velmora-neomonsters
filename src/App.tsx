@@ -19,28 +19,28 @@ import { TeamSanctuary } from './components/TeamSanctuary';
 import { CodexAndPixelQA } from './components/CodexAndPixelQA';
 import { HybridStoreAndWallet } from './components/HybridStoreAndWallet';
 import { AdminTreasuryPanel } from './components/AdminTreasuryPanel';
-import { Volume2, VolumeX, Sparkles, RefreshCw } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles } from 'lucide-react';
 
 type NavTab = 'arena' | 'citadel' | 'sanctuary' | 'codex' | 'store' | 'admin';
 
 const DEFAULT_INVENTORY: Record<string, number> = {
-  essence_fire: 12,
-  essence_water: 12,
-  essence_earth: 12,
-  essence_storm: 12,
-  essence_light: 12,
-  essence_shadow: 12,
-  capture_orb_basic: 8,
-  capture_orb_master: 2,
+  elem_fire: 12,
+  elem_water: 12,
+  elem_earth: 12,
+  elem_storm: 12,
+  elem_light: 12,
+  elem_shadow: 12,
+  capture_basic: 8,
+  capture_master: 2,
   xp_fruit: 15,
-  evolution_crown: 3,
+  evo_crown: 3,
 };
 
 export function App() {
   const tgUser = getTelegramUserContext();
 
   const [profile, setProfile] = useState<PlayerProfile>(() => {
-    const saved = localStorage.getItem('velmora_profile_v1');
+    const saved = localStorage.getItem('velmora_profile_v2');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -55,7 +55,7 @@ export function App() {
       first_name: tgUser.firstName,
       starter_chosen: null,
       gold: 2500,
-      velmora_crystals: 150,
+      velmora_crystals: 180,
       ton_balance: 5.0,
       stars_balance: 250,
       energy: 100,
@@ -78,7 +78,7 @@ export function App() {
   });
 
   const [ownedMonsters, setOwnedMonsters] = useState<OwnedMonster[]>(() => {
-    const saved = localStorage.getItem('velmora_monsters_v1');
+    const saved = localStorage.getItem('velmora_monsters_v2');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -91,53 +91,48 @@ export function App() {
   });
 
   const [activeTab, setActiveTab] = useState<NavTab>('arena');
+  const [codexElement, setCodexElement] = useState<string>('fire');
   const [showStarterModal, setShowStarterModal] = useState<boolean>(
     !profile.starter_chosen || ownedMonsters.length === 0
   );
   const [previewStarterId, setPreviewStarterId] = useState<string>('pyro_1');
   const [isMuted, setIsMuted] = useState<boolean>(false);
 
-  // Sync profile & monsters to localStorage & Supabase Game DB
+  // Sync profile & monsters to localStorage
   useEffect(() => {
-    localStorage.setItem('velmora_profile_v1', JSON.stringify(profile));
+    localStorage.setItem('velmora_profile_v2', JSON.stringify(profile));
   }, [profile]);
 
   useEffect(() => {
-    localStorage.setItem('velmora_monsters_v1', JSON.stringify(ownedMonsters));
+    localStorage.setItem('velmora_monsters_v2', JSON.stringify(ownedMonsters));
   }, [ownedMonsters]);
 
-  // Upsert player profile in Supabase Game DB on mount & updates
+  // Upsert player profile in Supabase Game DB (`player_profiles`)
   useEffect(() => {
     const syncToDb = async () => {
       try {
-        const { data } = await gameSupabase
-          .from('players')
-          .upsert(
-            {
-              telegram_id: profile.telegram_id,
-              username: profile.username,
-              first_name: profile.first_name,
-              starter_chosen: profile.starter_chosen,
-              gold: profile.gold,
-              velmora_crystals: profile.velmora_crystals,
-              ton_balance: profile.ton_balance,
-              stars_balance: profile.stars_balance,
-              trophies: profile.trophies,
-              wins: profile.wins,
-              losses: profile.losses,
-              campaign_stage: profile.campaign_stage,
-              referral_code: profile.referral_code,
-              base_buildings: profile.base_buildings,
-              inventory: profile.inventory,
-            },
-            { onConflict: 'telegram_id' }
-          )
-          .select('id')
-          .single();
+        const starterElem = profile.starter_chosen
+          ? SPECIES_BY_ID[profile.starter_chosen]?.element || 'fire'
+          : 'fire';
 
-        if (data?.id && profile.id.startsWith('local-')) {
-          setProfile((prev) => ({ ...prev, id: data.id }));
-        }
+        await gameSupabase.from('player_profiles').upsert(
+          {
+            telegram_id: profile.telegram_id,
+            username: profile.username,
+            starter_element: starterElem,
+            gold: profile.gold,
+            crystals: profile.velmora_crystals,
+            energy: profile.energy,
+            ton_balance: profile.ton_balance,
+            pvp_elo: profile.trophies,
+            wins: profile.wins,
+            losses: profile.losses,
+            buildings: profile.base_buildings,
+            inventory: profile.inventory,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'telegram_id' }
+        );
       } catch {
         // Ignore offline/network errors
       }
@@ -181,30 +176,6 @@ export function App() {
     setShowStarterModal(false);
   };
 
-  // Add a captured monster during 4v4 Wild Expedition directly into the player's 4v4 team!
-  const handleCaptureMonster = (speciesId: string, level: number) => {
-    setOwnedMonsters((prev) => {
-      const usedSlots = new Set(prev.map((m) => m.teamSlot).filter(Boolean));
-      let nextSlot: number | null = null;
-      for (let s = 1; s <= 8; s++) {
-        if (!usedSlots.has(s)) {
-          nextSlot = s;
-          break;
-        }
-      }
-      const captured: OwnedMonster = {
-        instanceId: `cap_${speciesId}_${Date.now()}`,
-        speciesId,
-        level,
-        xp: 0,
-        teamSlot: nextSlot,
-      };
-      const updated = [...prev, captured];
-      syncMonstersToSupabase(profile.id, updated);
-      return updated;
-    });
-  };
-
   const previewSpecies = SPECIES_BY_ID[previewStarterId] || STARTER_SPECIES[0];
   const previewEvolutionStages = MONSTER_SPECIES.filter(
     (s) => s.family_id === previewSpecies.family_id
@@ -232,7 +203,8 @@ export function App() {
                 </span>
               </div>
               <div className="text-[11px] text-slate-400">
-                @{profile.username} • Equipo: {ownedMonsters.filter((m) => m.teamSlot && m.teamSlot <= 4).length}/4
+                @{profile.username} • Equipo:{' '}
+                {ownedMonsters.filter((m) => m.teamSlot && m.teamSlot <= 4).length}/4
               </div>
             </div>
           </div>
@@ -276,7 +248,7 @@ export function App() {
                 const muted = soundManager.toggleMute();
                 setIsMuted(muted);
               }}
-              title="Música Chiptune 16-Bit"
+              title="Música Chiptune 16-Bit (CC0)"
               className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400"
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -289,10 +261,49 @@ export function App() {
       <main className="max-w-6xl mx-auto px-3 pt-4">
         {activeTab === 'arena' && (
           <BattleArena4v4
-            profile={profile}
-            ownedMonsters={ownedMonsters}
-            onUpdateProfile={setProfile}
-            onCaptureMonster={handleCaptureMonster}
+            playerRoster={ownedMonsters}
+            gold={profile.gold}
+            tonBalance={profile.ton_balance}
+            energy={profile.energy}
+            inventory={profile.inventory}
+            telegramId={profile.telegram_id}
+            username={profile.username}
+            onBattleComplete={(res) => {
+              setProfile((prev) => {
+                const nextInv = { ...prev.inventory };
+                if (res.itemDeltas) {
+                  Object.entries(res.itemDeltas).forEach(([k, d]) => {
+                    nextInv[k] = Math.max(0, (nextInv[k] || 0) + d);
+                  });
+                }
+                return {
+                  ...prev,
+                  gold: Math.max(0, prev.gold + res.goldDelta),
+                  ton_balance: Math.max(0, Number((prev.ton_balance + res.tonDelta).toFixed(4))),
+                  trophies: Math.max(0, prev.trophies + res.eloDelta),
+                  wins: res.won ? prev.wins + 1 : prev.wins,
+                  losses: !res.won ? prev.losses + 1 : prev.losses,
+                  inventory: nextInv,
+                };
+              });
+
+              if (res.capturedMonster) {
+                setOwnedMonsters((prev) => {
+                  const usedSlots = new Set(prev.map((m) => m.teamSlot).filter(Boolean));
+                  let assignedSlot: number | null = null;
+                  for (let s = 1; s <= 8; s++) {
+                    if (!usedSlots.has(s)) {
+                      assignedSlot = s;
+                      break;
+                    }
+                  }
+                  const cap = { ...res.capturedMonster!, teamSlot: assignedSlot };
+                  const next = [...prev, cap];
+                  syncMonstersToSupabase(profile.id, next);
+                  return next;
+                });
+              }
+            }}
           />
         )}
 
@@ -302,17 +313,63 @@ export function App() {
 
         {activeTab === 'sanctuary' && (
           <TeamSanctuary
-            profile={profile}
-            ownedMonsters={ownedMonsters}
-            onUpdateProfile={setProfile}
-            onUpdateMonsters={setOwnedMonsters}
+            roster={ownedMonsters}
+            gold={profile.gold}
+            crystals={profile.velmora_crystals}
+            inventory={profile.inventory}
+            onUpdateRoster={(next) => {
+              setOwnedMonsters(next);
+              syncMonstersToSupabase(profile.id, next);
+            }}
+            onSpendResources={(goldDelta, crystalDelta, itemDeltas) => {
+              setProfile((prev) => {
+                const nextInv = { ...prev.inventory };
+                if (itemDeltas) {
+                  Object.entries(itemDeltas).forEach(([k, d]) => {
+                    nextInv[k] = Math.max(0, (nextInv[k] || 0) + d);
+                  });
+                }
+                return {
+                  ...prev,
+                  gold: Math.max(0, prev.gold - goldDelta),
+                  velmora_crystals: Math.max(0, prev.velmora_crystals - crystalDelta),
+                  inventory: nextInv,
+                };
+              });
+            }}
+            onOpenEvolutionSheet={(elem) => {
+              setCodexElement(elem);
+              setActiveTab('codex');
+            }}
           />
         )}
 
-        {activeTab === 'codex' && <CodexAndPixelQA />}
+        {activeTab === 'codex' && <CodexAndPixelQA initialElement={codexElement} />}
 
         {activeTab === 'store' && (
-          <HybridStoreAndWallet profile={profile} onUpdateProfile={setProfile} />
+          <HybridStoreAndWallet
+            telegramId={profile.telegram_id}
+            username={profile.username}
+            gold={profile.gold}
+            crystals={profile.velmora_crystals}
+            tonBalance={profile.ton_balance}
+            vipTier={0}
+            onPurchaseSuccess={(goldDelta, crystalDelta, tonDelta, itemDeltas) => {
+              setProfile((prev) => {
+                const nextInv = { ...prev.inventory };
+                Object.entries(itemDeltas || {}).forEach(([k, d]) => {
+                  nextInv[k] = Math.max(0, (nextInv[k] || 0) + d);
+                });
+                return {
+                  ...prev,
+                  gold: Math.max(0, prev.gold + goldDelta),
+                  velmora_crystals: Math.max(0, prev.velmora_crystals + crystalDelta),
+                  ton_balance: Math.max(0, Number((prev.ton_balance + tonDelta).toFixed(4))),
+                  inventory: nextInv,
+                };
+              });
+            }}
+          />
         )}
 
         {activeTab === 'admin' && <AdminTreasuryPanel />}
@@ -339,7 +396,7 @@ export function App() {
             },
             {
               id: 'codex' as NavTab,
-              label: 'Hojas Diseño',
+              label: 'Hojas & Sheets',
               icon: '/assets/icons/icon_codex.png',
             },
             {
@@ -447,50 +504,43 @@ export function App() {
                   </p>
                 </div>
                 <span className="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-xs text-emerald-400 font-bold">
-                  Fuerte contra: {ELEMENT_META[ELEMENT_META[previewSpecies.element].strongAgainst].nameEs} (x1.5 Daño)
+                  3 Etapas de Evolución Únicas
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {previewEvolutionStages.map((stg) => (
                   <div
                     key={stg.id}
-                    className="bg-slate-900/90 border border-slate-700 rounded-lg p-2.5 flex items-center gap-2.5"
+                    className="bg-slate-900/90 border border-slate-700 rounded-lg p-2.5 flex items-center gap-3"
                   >
                     <img
                       src={`/assets/monsters/${stg.id}.png`}
                       alt={stg.name}
-                      className="w-14 h-14 pixelated shrink-0"
+                      className="w-14 h-14 pixelated bg-slate-950 rounded-lg p-1 border border-slate-800"
                     />
-                    <div className="min-w-0">
+                    <div>
                       <div className="text-[10px] font-bold text-amber-400">
-                        ETAPA {stg.stage} ({stg.rarity})
+                        ETAPA {stg.stage} • {stg.rarity.toUpperCase()}
                       </div>
-                      <div className="text-xs font-bold text-white truncate">{stg.name}</div>
-                      <div className="text-[10px] text-slate-400">
-                        HP {stg.base_hp} • ATK {stg.base_atk}
+                      <div className="text-sm font-bold text-white">{stg.name}</div>
+                      <div className="text-[11px] text-slate-400">
+                        HP {stg.base_hp} • ATK {stg.base_atk} • SPD {stg.base_spd}
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
-                {ownedMonsters.length > 0 && (
-                  <button
-                    onClick={() => setShowStarterModal(false)}
-                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300"
-                  >
-                    Cancelar
-                  </button>
-                )}
-                <button
-                  onClick={() => handleSelectStarter(previewSpecies.id)}
-                  className="pixel-btn px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-pixel-title text-xs"
-                >
-                  🔥 ELEGIR A {previewSpecies.name.toUpperCase()} Y EMPEZAR 4v4
-                </button>
-              </div>
+            {/* Confirm Starter Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => handleSelectStarter(previewSpecies.id)}
+                className="pixel-btn px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-pixel-title text-xs flex items-center gap-2 shadow-xl"
+              >
+                <Sparkles className="w-4 h-4" /> ELEGIR A {previewSpecies.name.toUpperCase()} Y COMENZAR
+              </button>
             </div>
           </div>
         </div>
@@ -498,4 +548,5 @@ export function App() {
     </div>
   );
 }
+
 export default App;

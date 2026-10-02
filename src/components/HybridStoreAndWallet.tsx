@@ -1,388 +1,604 @@
-import React, { useState } from 'react';
-import {
-  adminSupabase,
-  gameSupabase,
-  PlayerProfile,
-  recordHouseTreasuryEvent,
-} from '../lib/supabase';
+import React, { useEffect, useState } from 'react';
+import { recordTreasuryRevenue } from '../lib/supabase';
 import { soundManager } from '../lib/audio';
-import { ShoppingBag, Wallet, Users, Copy, Share2, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 
-interface Props {
-  profile: PlayerProfile;
-  onUpdateProfile: (updater: (prev: PlayerProfile) => PlayerProfile) => void;
+interface StorePack {
+  id: string;
+  title: string;
+  subtitle: string;
+  currency: 'STARS' | 'TON';
+  price: number;
+  goldBonus: number;
+  crystalBonus: number;
+  itemRewards: Record<string, number>;
+  vipUnlock?: boolean;
+  badge: string;
 }
 
-const HYBRID_STORE_PACKS = [
+const STORE_PACKS: StorePack[] = [
   {
-    id: 'pack_starter_stars',
-    title: 'Cofre Inicial Domador',
-    desc: '+150 Cristales Velmora • +1,500 Oro • +2 Orbes Maestros',
-    currency: 'STARS' as const,
+    id: 'stars_starter',
+    title: 'Pack Domador Inicial',
+    subtitle: '2,500 Oro + 150 Cristales + 5 Orbes + 1 Corona Real',
+    currency: 'STARS',
     price: 50,
-    crystals: 150,
-    gold: 1500,
-    masterOrbs: 2,
-    crowns: 0,
-    icon: '/assets/icons/icon_stars.png',
-    badge: 'POPULAR ⭐',
+    goldBonus: 2500,
+    crystalBonus: 150,
+    itemRewards: { capture_basic: 5, evo_crown: 1 },
+    badge: 'MÁS VENDIDO ⭐',
   },
   {
-    id: 'pack_evo_stars',
-    title: 'Reliquia de Evolución Mítica',
-    desc: '+400 Cristales • +4 Coronas de Evolución • +10 Frutas XP',
-    currency: 'STARS' as const,
+    id: 'stars_vip_pass',
+    title: 'Pase VIP Soberano',
+    subtitle: '+25% Producción Ciudadela + 5,000 Oro + 400 Cristales + 2 Orbes Maestros',
+    currency: 'STARS',
     price: 150,
-    crystals: 400,
-    gold: 3500,
-    masterOrbs: 3,
-    crowns: 4,
-    icon: '/assets/icons/icon_evo_crown.png',
-    badge: 'EVOLUCIÓN RÁPIDA',
+    goldBonus: 5000,
+    crystalBonus: 400,
+    itemRewards: { capture_master: 2, xp_fruit: 10 },
+    vipUnlock: true,
+    badge: 'VIP MENSUAL 👑',
   },
   {
-    id: 'pack_ton_sovereign',
-    title: 'Pase Soberano Velmora (VIP)',
-    desc: '+1,000 Cristales • +10,000 Oro • +6 Coronas Evolución • +5 Orbes Maestros',
-    currency: 'TON' as const,
+    id: 'stars_mythic_chest',
+    title: 'Cofre de Evolución Mítica',
+    subtitle: '12,000 Oro + 1,000 Cristales + 3 Coronas Reales + 10 Esencias de cada Elemento',
+    currency: 'STARS',
+    price: 350,
+    goldBonus: 12000,
+    crystalBonus: 1000,
+    itemRewards: {
+      evo_crown: 3,
+      elem_fire: 10,
+      elem_water: 10,
+      elem_earth: 10,
+      elem_storm: 10,
+      elem_light: 10,
+      elem_shadow: 10,
+    },
+    badge: 'OFERTA ÉPICA 🔥',
+  },
+  {
+    id: 'ton_arena_chest',
+    title: 'Bóveda de Liquidez TON',
+    subtitle: '8,000 Oro + 600 Cristales + 2 Orbes Maestros (Pago con Saldo Interno TON)',
+    currency: 'TON',
     price: 1.5,
-    crystals: 1000,
-    gold: 10000,
-    masterOrbs: 5,
-    crowns: 6,
-    icon: '/assets/icons/icon_ton.png',
-    badge: 'MEJOR VALOR 💎',
+    goldBonus: 8000,
+    crystalBonus: 600,
+    itemRewards: { capture_master: 2, evo_crown: 2 },
+    badge: 'WEB3 TON 💎',
   },
 ];
 
-export const HybridStoreAndWallet: React.FC<Props> = ({ profile, onUpdateProfile }) => {
-  const [withdrawAddress, setWithdrawAddress] = useState<string>('UQD_Velmora_TON_Wallet_99x');
-  const [withdrawAmount, setWithdrawAmount] = useState<string>('1.5');
-  const [toast, setToast] = useState<string | null>(null);
+interface HybridStoreProps {
+  telegramId: number;
+  username: string;
+  gold: number;
+  crystals: number;
+  tonBalance: number;
+  vipTier: number;
+  onPurchaseSuccess: (
+    goldDelta: number,
+    crystalDelta: number,
+    tonDelta: number,
+    itemDeltas: Record<string, number>,
+    unlockVip?: boolean
+  ) => void;
+}
 
-  const notify = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 4000);
+export const HybridStoreAndWallet: React.FC<HybridStoreProps> = ({
+  telegramId,
+  username,
+  tonBalance,
+  vipTier,
+  onPurchaseSuccess,
+}) => {
+  const [walletAddress, setWalletAddress] = useState('UQDr9_VelmoraCommanderWallet889900112233445566');
+  const [depositAmount, setDepositAmount] = useState('2.0');
+  const [depositTxHash, setDepositTxHash] = useState('');
+  const [withdrawAmount, setWithdrawAmount] = useState('1.0');
+  const [treasuryWallet, setTreasuryWallet] = useState('UQVelmoraTreasuryMasterVault99887766554433221100');
+  const [txHistory, setTxHistory] = useState<any[]>([]);
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
+  const referralLink = `https://t.me/GameVelmoraBot?start=ref_${telegramId}`;
+
+  const fetchBlockchainHistory = async () => {
+    try {
+      const r = await fetch(`/api/ton-wallet?telegramId=${telegramId}`);
+      const d = await r.json();
+      if (d.treasuryWallet) setTreasuryWallet(d.treasuryWallet);
+      if (Array.isArray(d.transactions)) setTxHistory(d.transactions);
+    } catch {
+      // Ignore offline preview error
+    }
   };
 
-  // Buy Hybrid Pack (Telegram Stars or TON) -> 100% revenue logged to Owner's Admin Treasury DB!
-  const handleBuyPack = async (pack: typeof HYBRID_STORE_PACKS[0]) => {
-    if (pack.currency === 'TON' && profile.ton_balance < pack.price) {
-      notify('⚠️ Saldo TON insuficiente en tu billetera. Usa el botón de Depósito Rápido primero.');
-      return;
-    }
+  useEffect(() => {
+    fetchBlockchainHistory();
+  }, [telegramId]);
 
-    // If Stars pack, try creating invoice via serverless API and/or credit rewards
-    if (pack.currency === 'STARS') {
-      try {
-        const res = await fetch('/api/create-stars-invoice', {
+  const handleBuyPack = async (pack: StorePack) => {
+    setLoadingId(pack.id);
+    setStatusMsg(null);
+
+    try {
+      if (pack.currency === 'STARS') {
+        // 1. Create order in Supabase `payment_orders` + generate XTR invoice link
+        const resp = await fetch('/api/create-stars-invoice', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            title: pack.title,
-            description: pack.desc,
-            payload: pack.id,
-            starsAmount: pack.price,
+            packId: pack.id,
+            telegramId,
+            username,
           }),
         });
-        const data = await res.json();
-        const tg = (window as any).Telegram?.WebApp;
-        if (data?.ok && data?.result && tg?.openInvoice) {
-          tg.openInvoice(data.result);
+        const data = await resp.json();
+
+        const tgWebApp = (window as any)?.Telegram?.WebApp;
+        if (data?.invoiceLink && tgWebApp?.openInvoice) {
+          tgWebApp.openInvoice(data.invoiceLink, async (status: string) => {
+            if (status === 'paid') {
+              // Verify backend webhook processed `successful_payment` before syncing UI!
+              const verifyRes = await fetch(
+                `/api/telegram-webhook?orderPayload=${encodeURIComponent(data.orderPayload)}`
+              );
+              const verifyData = await verifyRes.json();
+              if (verifyData?.order?.status === 'paid_and_delivered') {
+                soundManager.playSfx('evolve');
+                onPurchaseSuccess(
+                  pack.goldBonus,
+                  pack.crystalBonus,
+                  0,
+                  pack.itemRewards,
+                  pack.vipUnlock
+                );
+                setStatusMsg(
+                  `✅ ¡Pago verificado por Webhook (successful_payment)! Recibiste ${pack.title}.`
+                );
+              } else {
+                setStatusMsg(
+                  `⏳ Pago enviado. Esperando confirmación final del webhook successful_payment (Orden: ${data.orderPayload}).`
+                );
+              }
+            } else {
+              setStatusMsg('⚠️ Pago con Telegram Stars cancelado por el usuario.');
+            }
+          });
+        } else if (data?.invoiceLink) {
+          window.open(data.invoiceLink, '_blank');
+          setStatusMsg(
+            `🔗 Factura oficial XTR generada (${data.orderPayload}). Ábrela en Telegram (@GameVelmoraBot): los ítems se acreditarán automáticamente cuando el servidor reciba y valide 'successful_payment'.`
+          );
+        } else {
+          setStatusMsg(`⚠️ Error al crear factura Stars: ${data?.error || 'Desconocido'}`);
         }
-      } catch {
-        // Proceed with instant fulfillment in preview/demo
+      } else {
+        // Purchase with Verified Internal TON Balance
+        if (tonBalance < pack.price) {
+          setStatusMsg(
+            `⚠️ Necesitas ${pack.price} TON en tu Balance Interno Verificado para comprar ${pack.title}.`
+          );
+          setLoadingId(null);
+          return;
+        }
+        soundManager.playSfx('evolve');
+        onPurchaseSuccess(
+          pack.goldBonus,
+          pack.crystalBonus,
+          -pack.price,
+          pack.itemRewards,
+          pack.vipUnlock
+        );
+        await recordTreasuryRevenue({
+          tx_type: 'TON_PURCHASE',
+          player_telegram_id: telegramId,
+          player_username: username,
+          currency: 'TON',
+          gross_amount: pack.price,
+          house_commission_amount: pack.price,
+          usd_equivalent: Number((pack.price * 5.25).toFixed(2)),
+          reference_note: `Compra Tienda TON (Saldo Interno): ${pack.title}`,
+        });
+        setStatusMsg(`💎 ¡Compra completada con Saldo Interno TON! Has recibido ${pack.title}.`);
       }
+    } catch (e) {
+      setStatusMsg(`⚠️ Error de red: ${String(e)}`);
+    } finally {
+      setLoadingId(null);
     }
-
-    soundManager.playSfx('evolve');
-
-    onUpdateProfile((prev) => ({
-      ...prev,
-      ton_balance:
-        pack.currency === 'TON'
-          ? Number((prev.ton_balance - pack.price).toFixed(4))
-          : prev.ton_balance,
-      stars_balance:
-        pack.currency === 'STARS'
-          ? Math.max(0, prev.stars_balance - pack.price)
-          : prev.stars_balance,
-      velmora_crystals: prev.velmora_crystals + pack.crystals,
-      gold: prev.gold + pack.gold,
-      inventory: {
-        ...prev.inventory,
-        capture_orb_master: (prev.inventory.capture_orb_master || 0) + pack.masterOrbs,
-        evolution_crown: (prev.inventory.evolution_crown || 0) + pack.crowns,
-        xp_fruit: (prev.inventory.xp_fruit || 0) + 5,
-      },
-    }));
-
-    // Record 100% of store purchase revenue into Admin Treasury Database!
-    await recordHouseTreasuryEvent({
-      sourceEvent: pack.currency === 'TON' ? `shop_ton_${pack.id}` : `shop_stars_${pack.id}`,
-      playerTelegramId: profile.telegram_id,
-      playerUsername: profile.username,
-      grossAmount: pack.price,
-      houseProfitTon: pack.currency === 'TON' ? pack.price : 0,
-      houseProfitStars: pack.currency === 'STARS' ? pack.price : 0,
-      currency: pack.currency,
-      notes: `Compra en Tienda Híbrida: ${pack.title} (${pack.price} ${pack.currency})`,
-    });
-
-    await gameSupabase.from('transactions').insert({
-      telegram_id: profile.telegram_id,
-      tx_type: `store_${pack.currency.toLowerCase()}`,
-      currency: pack.currency,
-      amount: pack.price,
-      house_revenue_ton: pack.currency === 'TON' ? pack.price : 0,
-      house_revenue_stars: pack.currency === 'STARS' ? pack.price : 0,
-      status: 'completed',
-    });
-
-    notify(`🎉 ¡Compra completada: ${pack.title}! Tus recursos e ingresos de tesorería se han actualizado.`);
   };
 
-  // Deposit TON to play high-stakes 4v4 Wager Rooms
-  const handleDepositTon = async (amt: number) => {
-    soundManager.playSfx('coin');
-    onUpdateProfile((prev) => ({
-      ...prev,
-      ton_balance: Number((prev.ton_balance + amt).toFixed(4)),
-    }));
-    await gameSupabase.from('transactions').insert({
-      telegram_id: profile.telegram_id,
-      tx_type: 'deposit_ton',
-      currency: 'TON',
-      amount: amt,
-      status: 'completed',
-    });
-    notify(`💎 ¡Depósito de +${amt.toFixed(2)} TON acreditado en tu Billetera de Juego!`);
-  };
-
-  // Request Real-Money TON Withdrawal (Saved to Admin Supabase Project withdrawal_requests)
-  const handleWithdrawTon = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const amt = parseFloat(withdrawAmount);
-    if (isNaN(amt) || amt < 0.5) {
-      notify('⚠️ El monto mínimo de retiro es 0.50 TON.');
-      return;
-    }
-    if (profile.ton_balance < amt) {
-      notify('⚠️ Saldo TON insuficiente para retirar esa cantidad.');
-      return;
-    }
-
-    const fee = 0.05;
-    const net = Number((amt - fee).toFixed(4));
-    soundManager.playSfx('coin');
-
-    onUpdateProfile((prev) => ({
-      ...prev,
-      ton_balance: Number((prev.ton_balance - amt).toFixed(4)),
-    }));
-
+  const handleBindWallet = async () => {
     try {
-      await adminSupabase.from('withdrawal_requests').insert({
-        telegram_id: profile.telegram_id,
-        username: profile.username,
-        wallet_address: withdrawAddress,
-        amount_ton: amt,
-        fee_ton: fee,
-        net_amount_ton: net,
-        status: 'pending',
+      const r = await fetch('/api/ton-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'bind_wallet',
+          telegramId,
+          username,
+          walletAddress,
+        }),
       });
-
-      await recordHouseTreasuryEvent({
-        sourceEvent: 'withdrawal_network_fee',
-        playerTelegramId: profile.telegram_id,
-        playerUsername: profile.username,
-        grossAmount: amt,
-        houseProfitTon: fee,
-        houseProfitStars: 0,
-        currency: 'TON',
-        notes: `Comisión de retiro de ${profile.username} a ${withdrawAddress}`,
-      });
-    } catch {
-      // Ignore
+      const d = await r.json();
+      if (!r.ok) {
+        setStatusMsg(`⚠️ ${d.error}`);
+      } else {
+        soundManager.playSfx('coin');
+        setStatusMsg(`✅ Billetera TON externa vinculada en servidor: ${d.walletAddress}`);
+      }
+    } catch (e) {
+      setStatusMsg(`⚠️ Error al vincular billetera: ${String(e)}`);
     }
-
-    notify(
-      `✅ Solicitud de retiro por ${net} TON enviada al Panel Admin de Tesorería (Comisión red: ${fee} TON).`
-    );
   };
 
-  const botUsername = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'GameVelmoraBot';
-  const refLink = `https://t.me/${botUsername}?start=REF_${profile.telegram_id}`;
+  const handleVerifyTonDeposit = async () => {
+    const amt = parseFloat(depositAmount);
+    if (isNaN(amt) || amt < 0.2) {
+      setStatusMsg('⚠️ El depósito mínimo a verificar es de 0.20 TON.');
+      return;
+    }
+    if (!depositTxHash || depositTxHash.trim().length < 16) {
+      setStatusMsg(
+        '⚠️ Ingresa el Hash (TxHash / BOC) real de tu transferencia en la red TON para verificarla en el servidor.'
+      );
+      return;
+    }
+
+    setLoadingId('verify_deposit');
+    try {
+      const r = await fetch('/api/ton-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'verify_deposit',
+          telegramId,
+          username,
+          walletAddress,
+          txHash: depositTxHash.trim(),
+          amountTon: amt,
+          idempotencyKey: `dep_${telegramId}_${depositTxHash.trim()}`,
+        }),
+      });
+      const d = await r.json();
+      await fetchBlockchainHistory();
+
+      if (!r.ok) {
+        setStatusMsg(`⚠️ ${d.error}`);
+      } else if (d.credited) {
+        soundManager.playSfx('coin');
+        onPurchaseSuccess(0, 0, amt, {});
+        setStatusMsg(`✅ ${d.message}`);
+      } else {
+        setStatusMsg(`⏳ ${d.message}`);
+      }
+    } catch (e) {
+      setStatusMsg(`⚠️ Error verificando depósito: ${String(e)}`);
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const handleWithdrawTon = async () => {
+    const amt = parseFloat(withdrawAmount);
+    if (isNaN(amt) || amt < 1.0) {
+      setStatusMsg('⚠️ El retiro mínimo es de 1.00 TON.');
+      return;
+    }
+    if (tonBalance < amt) {
+      setStatusMsg('⚠️ No tienes suficiente saldo TON interno verificado.');
+      return;
+    }
+
+    setLoadingId('withdraw_ton');
+    try {
+      const r = await fetch('/api/ton-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'request_withdrawal',
+          telegramId,
+          username,
+          walletAddress,
+          amountTon: amt,
+          idempotencyKey: `wd_${telegramId}_${Date.now()}`,
+        }),
+      });
+      const d = await r.json();
+      await fetchBlockchainHistory();
+
+      if (!r.ok) {
+        setStatusMsg(`⚠️ ${d.error}`);
+      } else {
+        soundManager.playSfx('coin');
+        onPurchaseSuccess(0, 0, -amt, {});
+        setStatusMsg(`✅ ${d.message}`);
+      }
+    } catch (e) {
+      setStatusMsg(`⚠️ Error procesando retiro: ${String(e)}`);
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
   return (
     <div className="space-y-4">
-      {toast && (
-        <div className="pixel-panel-gold rounded-xl p-3 text-xs font-bold text-amber-200">
-          {toast}
+      {statusMsg && (
+        <div className="pixel-panel p-3 border-emerald-400 bg-emerald-950/40 text-emerald-200 text-xs font-bold flex items-center justify-between">
+          <span>{statusMsg}</span>
+          <button onClick={() => setStatusMsg(null)} className="underline ml-2">
+            OK
+          </button>
         </div>
       )}
 
-      {/* 1. Hybrid Store: Telegram Stars + TON */}
-      <div className="pixel-panel rounded-xl p-4 space-y-3">
-        <div>
-          <h2 className="font-pixel-title text-xs sm:text-sm text-amber-400 flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4" /> TIENDA HÍBRIDA OFICIAL (TELEGRAM STARS ⭐ & TON 💎)
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Cada paquete comprado acredita el 100% del ingreso en la base de datos de Tesorería (`velmora-admin-analytics`).
-          </p>
+      {/* Store Packs Grid */}
+      <div className="pixel-panel p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div>
+            <h2 className="font-pixel text-sm sm:text-base text-amber-300">
+              🛒 TIENDA HÍBRIDA OFICIAL (TELEGRAM STARS ⭐ & TON 💎)
+            </h2>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Los pagos con Telegram Stars pasan por validación completa de Webhook (`createInvoiceLink` ➔ `pre_checkout_query` ➔ `successful_payment`).
+            </p>
+          </div>
+          <div className="px-3 py-1.5 rounded bg-slate-900 border border-amber-500/50 text-xs font-pixel text-amber-300">
+            ESTADO VIP: {vipTier > 0 ? '👑 SOBERANO ACTIVO (+25%)' : 'ESTÁNDAR'}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {HYBRID_STORE_PACKS.map((p) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {STORE_PACKS.map((pack) => (
             <div
-              key={p.id}
-              className="bg-slate-900/90 border-2 border-slate-700 hover:border-amber-400 rounded-xl p-3.5 flex flex-col justify-between transition"
+              key={pack.id}
+              className="bg-slate-900/90 border-2 border-slate-700 hover:border-amber-400 rounded p-3.5 flex flex-col justify-between transition"
             >
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">
-                    {p.badge}
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-300 font-pixel text-[9px]">
+                    {pack.badge}
                   </span>
-                  <img src={p.icon} className="w-7 h-7 pixelated" alt="" />
+                  <div className="flex items-center gap-1 font-pixel text-xs text-white">
+                    <img
+                      src={
+                        pack.currency === 'STARS'
+                          ? '/assets/icons/icon_stars.png'
+                          : '/assets/icons/icon_ton.png'
+                      }
+                      alt={pack.currency}
+                      className="w-5 h-5 pixel-art"
+                    />
+                    {pack.price} {pack.currency}
+                  </div>
                 </div>
-                <h3 className="font-bold text-sm text-white">{p.title}</h3>
-                <p className="text-xs text-slate-300 mt-1">{p.desc}</p>
+                <h3 className="font-pixel text-xs sm:text-sm text-white">{pack.title}</h3>
+                <p className="text-xs text-slate-300 mt-1">{pack.subtitle}</p>
               </div>
 
               <button
-                onClick={() => handleBuyPack(p)}
-                className={`mt-4 pixel-btn w-full py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 ${
-                  p.currency === 'TON'
-                    ? 'bg-sky-600 hover:bg-sky-500 text-white'
-                    : 'bg-amber-500 hover:bg-amber-400 text-slate-950'
+                onClick={() => handleBuyPack(pack)}
+                disabled={loadingId === pack.id}
+                className={`pixel-btn w-full py-2.5 mt-3 text-[10px] flex items-center justify-center gap-2 ${
+                  pack.currency === 'STARS' ? 'pixel-btn-gold' : 'pixel-btn-blue'
                 }`}
               >
-                <img src={p.icon} className="w-4 h-4 pixelated" alt="" />
-                COMPRAR POR {p.price} {p.currency}
+                <img
+                  src={
+                    pack.currency === 'STARS'
+                      ? '/assets/icons/icon_stars.png'
+                      : '/assets/icons/icon_ton.png'
+                  }
+                  alt="Buy"
+                  className="w-4 h-4 pixel-art"
+                />
+                {loadingId === pack.id
+                  ? 'CREANDO ORDEN SEGURA...'
+                  : `COMPRAR CON ${pack.price} ${pack.currency}`}
               </button>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 2. Real-Money TON Wallet (Deposits & Withdrawals) + Referral Engine */}
+      {/* TON Web3 Wallet Verification + Referral Center */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="pixel-panel rounded-xl p-4 space-y-3">
+        {/* Verified TON Wallet Deposit & Withdrawal */}
+        <div className="pixel-panel p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-pixel-title text-xs text-sky-400 flex items-center gap-2">
-              <Wallet className="w-4 h-4" /> BILLETERA TON / USDT (DEPÓSITO Y RETIRO)
-            </h3>
-            <span className="px-2.5 py-1 rounded bg-sky-950 border border-sky-500/50 text-xs font-bold text-sky-300">
-              Saldo: {profile.ton_balance.toFixed(2)} TON
-            </span>
-          </div>
-
-          <div className="bg-slate-900/90 border border-slate-800 rounded-lg p-3">
-            <div className="text-xs text-slate-300 mb-2 font-semibold">
-              Recarga Rápida de Saldo TON (Para Salas de Apuestas 4v4):
+            <div className="flex items-center gap-2">
+              <img src="/assets/icons/icon_ton.png" alt="TON" className="w-8 h-8 pixel-art" />
+              <div>
+                <h3 className="font-pixel text-xs text-sky-300">
+                  BÓVEDA TON (VERIFICACIÓN ON-CHAIN & ESCROW)
+                </h3>
+                <p className="text-[11px] text-slate-400">
+                  Separación estricta entre Saldo Interno del Juego y Blockchain TON
+                </p>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {[1.0, 5.0, 15.0].map((amt) => (
-                <button
-                  key={amt}
-                  onClick={() => handleDepositTon(amt)}
-                  className="pixel-btn px-3 py-1.5 rounded bg-sky-800 hover:bg-sky-700 text-xs font-bold text-white flex items-center gap-1"
-                >
-                  <ArrowDownLeft className="w-3.5 h-3.5 text-emerald-300" /> +{amt} TON
-                </button>
-              ))}
+            <div className="text-right">
+              <div className="text-[9px] font-pixel text-slate-400">SALDO INTERNO VERIFICADO</div>
+              <div className="font-pixel text-sm text-sky-300">{tonBalance.toFixed(2)} TON</div>
             </div>
           </div>
 
-          <form onSubmit={handleWithdrawTon} className="space-y-2.5 pt-1">
+          <div className="bg-slate-950/80 border border-slate-800 rounded p-2.5 text-[11px] text-slate-300">
             <div>
-              <label className="block text-xs text-slate-400 mb-1">
-                Dirección de Billetera TON / USDT (Red TON):
-              </label>
+              <span className="text-slate-400">Bóveda Tesorería Destino:</span>{' '}
+              <span className="font-mono text-amber-300 break-all">{treasuryWallet}</span>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-pixel text-slate-400 mb-1">
+              TU DIRECCIÓN DE BILLETERA EXTERNA TON (UQ... / EQ...):
+            </label>
+            <div className="flex gap-2">
               <input
                 type="text"
-                value={withdrawAddress}
-                onChange={(e) => setWithdrawAddress(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white font-mono"
-                required
+                value={walletAddress}
+                onChange={(e) => setWalletAddress(e.target.value)}
+                className="flex-1 bg-slate-950 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white font-mono"
               />
+              <button
+                onClick={handleBindWallet}
+                className="pixel-btn pixel-btn-slate px-3 py-1.5 text-[9px] shrink-0"
+              >
+                VINCULAR
+              </button>
             </div>
-            <div className="flex gap-2 items-end">
-              <div className="flex-1">
-                <label className="block text-xs text-slate-400 mb-1">
-                  Cantidad a Retirar (Mín. 0.50 TON):
-                </label>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div className="bg-slate-900/90 p-2.5 rounded border border-slate-800 space-y-1.5">
+              <div className="text-[10px] font-pixel text-emerald-400">
+                VERIFICAR DEPÓSITO ON-CHAIN
+              </div>
+              <input
+                type="number"
+                step="0.5"
+                value={depositAmount}
+                onChange={(e) => setDepositAmount(e.target.value)}
+                placeholder="Monto TON"
+                className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs text-white"
+              />
+              <input
+                type="text"
+                value={depositTxHash}
+                onChange={(e) => setDepositTxHash(e.target.value)}
+                placeholder="Pega TxHash / BOC de la red TON..."
+                className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-[11px] text-amber-200 font-mono"
+              />
+              <button
+                onClick={handleVerifyTonDeposit}
+                disabled={loadingId === 'verify_deposit'}
+                className="pixel-btn pixel-btn-green w-full py-2 text-[9px]"
+              >
+                {loadingId === 'verify_deposit' ? 'VERIFICANDO...' : '🔍 VERIFICAR HASH EN SERVIDOR'}
+              </button>
+            </div>
+
+            <div className="bg-slate-900/90 p-2.5 rounded border border-slate-800 flex flex-col justify-between space-y-1.5">
+              <div>
+                <div className="text-[10px] font-pixel text-amber-300">
+                  SOLICITAR RETIRO (5% FEE)
+                </div>
                 <input
                   type="number"
-                  step="0.1"
-                  min="0.5"
+                  step="0.5"
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs text-white font-mono"
-                  required
+                  className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-xs text-white mt-1.5"
                 />
+                <p className="text-[10px] text-slate-400 mt-1">
+                  El monto se descuenta en escrow y pasa a revisión del Tesoro.
+                </p>
               </div>
               <button
-                type="submit"
-                className="pixel-btn px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shrink-0"
+                onClick={handleWithdrawTon}
+                disabled={loadingId === 'withdraw_ton'}
+                className="pixel-btn pixel-btn-gold w-full py-2 text-[9px]"
               >
-                <ArrowUpRight className="w-4 h-4" /> Solicitar Retiro
+                {loadingId === 'withdraw_ton' ? 'PROCESANDO...' : '📤 SOLICITAR RETIRO EN ESCROW'}
               </button>
             </div>
-          </form>
+          </div>
+
+          {/* Blockchain Transactions Log */}
+          <div className="pt-2 border-t border-slate-800">
+            <div className="text-[10px] font-pixel text-slate-400 mb-1.5">
+              HISTORIAL DE TRANSACCIONES (`blockchain_transactions` — IDEMPOTENTE):
+            </div>
+            {txHistory.length === 0 ? (
+              <div className="text-[11px] text-slate-500">
+                Sin transacciones registradas todavía.
+              </div>
+            ) : (
+              <div className="max-h-28 overflow-y-auto space-y-1 pr-1">
+                {txHistory.map((tx) => (
+                  <div
+                    key={tx.id}
+                    className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-[10px] flex items-center justify-between"
+                  >
+                    <div>
+                      <span className="font-bold text-white">{tx.tx_type}</span>{' '}
+                      <span className="text-sky-300">{tx.gross_amount_ton} TON</span>
+                      {tx.tx_hash && (
+                        <span className="text-slate-500 font-mono ml-1">
+                          ({String(tx.tx_hash).slice(0, 10)}...)
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      className={`px-1.5 py-0.5 rounded font-pixel text-[8px] ${
+                        tx.status === 'confirmed'
+                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40'
+                          : tx.status === 'pending'
+                          ? 'bg-amber-950 text-amber-300 border border-amber-500/40'
+                          : 'bg-rose-950 text-rose-300 border border-rose-500/40'
+                      }`}
+                    >
+                      {String(tx.status).toUpperCase()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Telegram Bot Referral Program (@GameVelmoraBot) */}
-        <div className="pixel-panel rounded-xl p-4 space-y-3 flex flex-col justify-between">
+        {/* Telegram Viral Referral Program */}
+        <div className="pixel-panel p-4 flex flex-col justify-between">
           <div>
-            <h3 className="font-pixel-title text-xs text-emerald-400 flex items-center gap-2">
-              <Users className="w-4 h-4" /> PROGRAMA DE REFERIDOS VIRAL (@{botUsername})
-            </h3>
-            <p className="text-xs text-slate-300 mt-1">
-              Invita amigos con tu link oficial de Telegram. Recibes el{' '}
-              <strong className="text-amber-300">20% de comisión en TON</strong> de todas sus partidas PvP 4v4 y +500 Oro por cada amigo.
-            </p>
-
-            <div className="mt-3 bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex items-center justify-between gap-2">
-              <code className="text-xs text-amber-300 truncate">{refLink}</code>
-              <button
-                onClick={() => {
-                  navigator.clipboard?.writeText(refLink);
-                  notify('📋 ¡Enlace de referido de @GameVelmoraBot copiado al portapapeles!');
-                }}
-                className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-white flex items-center gap-1 shrink-0"
-              >
-                <Copy className="w-3.5 h-3.5" /> Copiar
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 text-center my-2">
-            <div className="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5">
-              <div className="text-[10px] text-slate-400">ALIADOS INVITADOS</div>
-              <div className="text-base font-bold text-white">{profile.referral_count} Domadores</div>
-            </div>
-            <div className="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5">
-              <div className="text-[10px] text-slate-400">COMISIONES GANADAS</div>
-              <div className="text-base font-bold text-emerald-400">
-                {profile.referral_earnings_ton.toFixed(3)} TON
+            <div className="flex items-center gap-2 mb-2">
+              <img src="/assets/icons/icon_gold.png" alt="Ref" className="w-8 h-8 pixel-art" />
+              <div>
+                <h3 className="font-pixel text-xs text-amber-300">
+                  PROGRAMA DE EMBAJADORES & REFERIDOS (@GameVelmoraBot)
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Gana el 15% de comisión en Oro y TON por las compras de tus invitados
+                </p>
               </div>
             </div>
+
+            <p className="text-xs text-slate-300 mb-3">
+              Comparte tu enlace oficial de comandante en grupos de Telegram. Cada amigo que inicie el juego con tu link recibe <strong>+500 Oro</strong> y tú recibes recompensas vitalicias.
+            </p>
+
+            <div className="bg-slate-950 border border-slate-700 rounded p-2.5 text-xs font-mono text-sky-300 break-all mb-3">
+              {referralLink}
+            </div>
           </div>
 
-          <a
-            href={`https://t.me/share/url?url=${encodeURIComponent(
-              refLink
-            )}&text=${encodeURIComponent(
-              '🐉 ¡Únete a Velmora: Neo Monsters Arena 4v4 en Telegram! Elige tu monstruo inicial entre 6 elementos y gana TON en duelos tácticos:'
-            )}`}
-            target="_blank"
-            rel="noreferrer"
-            className="pixel-btn w-full py-2.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-bold text-xs flex items-center justify-center gap-2"
-          >
-            <Share2 className="w-4 h-4" /> COMPARTIR EN TELEGRAM AHORA
-          </a>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(referralLink);
+                setStatusMsg('📋 ¡Enlace de referido copiado al portapapeles!');
+              }}
+              className="pixel-btn pixel-btn-blue flex-1 py-2.5 text-[10px]"
+            >
+              📋 COPIAR LINK DE INVITACIÓN
+            </button>
+            <a
+              href={`https://t.me/share/url?url=${encodeURIComponent(
+                referralLink
+              )}&text=${encodeURIComponent(
+                '🐉 ¡Únete a mi escuadrón 4v4 en Velmora: Neo Monsters Arena y gana TON y Oro!'
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="pixel-btn pixel-btn-gold px-4 py-2.5 text-[10px] flex items-center"
+            >
+              🚀 COMPARTIR EN TELEGRAM
+            </a>
+          </div>
         </div>
       </div>
     </div>

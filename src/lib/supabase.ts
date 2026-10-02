@@ -76,6 +76,23 @@ export function getTelegramUserContext(): {
   };
 }
 
+export async function recordTreasuryRevenue(params: {
+  tx_type: string;
+  player_telegram_id: number;
+  player_username: string;
+  currency: 'TON' | 'STARS' | 'GOLD';
+  gross_amount: number;
+  house_commission_amount: number;
+  usd_equivalent: number;
+  reference_note: string;
+}) {
+  try {
+    await adminSupabase.from('treasury_ledger').insert(params);
+  } catch (e) {
+    console.warn('Treasury revenue log warning:', e);
+  }
+}
+
 export async function recordHouseTreasuryEvent(params: {
   sourceEvent: string;
   playerTelegramId: number;
